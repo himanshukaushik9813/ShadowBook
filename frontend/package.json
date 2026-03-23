@@ -1,0 +1,31 @@
+{
+  "name": "shadowbook-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ShadowBook frontend",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@cofhe/abi": "^0.4.0",
+    "@cofhe/react": "^0.4.0",
+    "@cofhe/sdk": "^0.4.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.17.10",
+    "@tanstack/react-query": "^5.94.5",
+    "framer-motion": "^12.38.0",
+    "gsap": "^3.14.2",
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.183.2",
+    "viem": "^2.47.6",
+    "wagmi": "^2.19.5"
+  }
+}

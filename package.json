@@ -1,0 +1,26 @@
+{
+  "name": "shadowbook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ShadowBook - Encrypted Orderflow Layer powered by Fhenix CoFHE",
+  "type": "commonjs",
+  "scripts": {
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "clean:repo": "npm run clean && rm -rf frontend/.next",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:arb-sepolia": "hardhat run scripts/deploy.js --network arbitrumSepolia",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:start": "npm --prefix frontend run start"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.6",
+    "dotenv": "^17.3.1",
+    "hardhat": "^2.22.16"
+  },
+  "dependencies": {
+    "@fhenixprotocol/cofhe-contracts": "^0.1.0",
+    "@openzeppelin/contracts": "^5.6.1"
+  }
+}

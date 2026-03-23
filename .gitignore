@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build artifacts
+artifacts/
+cache/
+frontend/.next/
+frontend/out/
+dist/
+coverage/
+
+# Environment files (keep examples only)
+.env
+.env.*
+!.env.example
+frontend/.env.local
+frontend/.env.*
+!frontend/.env.local.example
+
+# Keys / certs / sensitive local exports
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
