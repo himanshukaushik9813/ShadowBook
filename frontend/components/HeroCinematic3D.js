@@ -185,41 +185,52 @@ export default function HeroCinematic3D() {
           maskImage: 'radial-gradient(circle at center, black 30%, transparent 78%)',
         }}
       />
-      <div className="sb-radial-glow -left-[20vw] -top-[20vw] z-[3] h-[58vw] w-[58vw] bg-emerald-300/30" />
-      <div className="sb-radial-glow -bottom-[24vw] -right-[16vw] z-[3] h-[62vw] w-[62vw] bg-cyan-300/24" />
+      <div className="sb-radial-glow -left-[20vw] -top-[20vw] z-[3] h-[58vw] w-[58vw] bg-emerald-300/20" />
+      <div className="sb-radial-glow -bottom-[24vw] -right-[16vw] z-[3] h-[62vw] w-[62vw] bg-cyan-300/18" />
+      <div className="pointer-events-none absolute inset-0 z-[4] bg-gradient-to-b from-black/60 to-black/90" />
 
       <div className="pointer-events-none relative z-[5] flex h-full flex-col items-center justify-center px-4 text-center">
-        <h1 ref={titleRef} className="sb-heading-xl max-w-6xl leading-[0.95]">
-          <span className="sb-text-gradient">Invisible Trading Layer</span>
-        </h1>
-        <p ref={subtitleRef} className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
-          Execute trades without exposing intent.
-        </p>
-        <p className="max-w-2xl text-sm text-slate-400 md:text-base">
-          Client-side encryption, private on-chain matching, and secure local decryption.
-        </p>
+        <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl md:p-8">
+          <h1
+            ref={titleRef}
+            className="max-w-6xl text-4xl font-extrabold tracking-[0.02em] text-white md:text-5xl lg:text-7xl lg:leading-[1.08]"
+            style={{ textShadow: '0 0 20px rgba(0,255,150,0.6)' }}
+          >
+            Invisible Trading Layer
+          </h1>
+          <p
+            ref={subtitleRef}
+            className="mt-5 max-w-2xl text-lg leading-relaxed tracking-[0.01em] md:text-xl"
+            style={{ color: '#A0AEC0', textShadow: '0 0 20px rgba(0,255,150,0.6)' }}
+          >
+            Execute trades without exposing intent.
+          </p>
+          <p className="max-w-2xl text-sm leading-relaxed tracking-[0.01em] md:text-base" style={{ color: '#A0AEC0' }}>
+            Client-side encryption, private on-chain matching, and secure local decryption.
+          </p>
 
-        <div className="pointer-events-auto mt-8 flex flex-wrap items-center justify-center gap-3">
-          <button type="button" className="sb-button-primary min-w-52" onClick={scrollToTrading}>
-            Start Private Execution
-          </button>
-          <a href="#secure-end" className="sb-button-ghost min-w-44">
-            View Secure Outcome
-          </a>
-        </div>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button type="button" className="sb-button-primary min-w-52" onClick={scrollToTrading}>
+              Start Private Execution
+            </button>
+            <a href="#secure-end" className="sb-button-ghost min-w-44">
+              View Secure Outcome
+            </a>
+          </div>
 
-        <div ref={cardsRef} className="pointer-events-auto mt-8 flex flex-wrap justify-center gap-3">
-          {['Encrypted Orders', 'Private Matching', 'Zero MEV'].map((item) => (
-            <motion.div
-              key={item}
-              className="rounded-2xl border border-cyan-200/30 bg-slate-900/45 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 backdrop-blur-md"
-              whileHover={{ y: -6, scale: 1.02, boxShadow: '0 0 38px rgba(71, 255, 161, 0.28)' }}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {item}
-            </motion.div>
-          ))}
+          <div ref={cardsRef} className="mt-8 flex flex-wrap justify-center gap-3">
+            {['Encrypted Orders', 'Private Matching', 'Zero MEV'].map((item) => (
+              <motion.div
+                key={item}
+                className="rounded-2xl border border-cyan-200/30 bg-slate-900/45 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 backdrop-blur-md"
+                whileHover={{ y: -6, scale: 1.02, boxShadow: '0 0 38px rgba(71, 255, 161, 0.28)' }}
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {item}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
