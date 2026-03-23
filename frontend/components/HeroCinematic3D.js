@@ -9,12 +9,12 @@ function EncryptedBlocks() {
   const groupRef = useRef(null);
   const blockPositions = useMemo(
     () => [
-      [-1.2, 0.5, 0],
-      [0.1, 1.1, -0.7],
-      [1.1, 0.3, 0.3],
-      [-0.6, -0.7, 0.4],
-      [0.8, -0.8, -0.4],
-      [0.2, 0, 0.9],
+      [-1.2, 0.4, 0],
+      [0.2, 1.1, -0.7],
+      [1.1, 0.2, 0.4],
+      [-0.7, -0.8, 0.5],
+      [0.8, -0.9, -0.5],
+      [0.2, -0.1, 0.9],
     ],
     []
   );
@@ -24,34 +24,34 @@ function EncryptedBlocks() {
     groupRef.current.rotation.y += delta * 0.15;
     groupRef.current.rotation.x = THREE.MathUtils.lerp(
       groupRef.current.rotation.x,
-      state.pointer.y * 0.35,
+      state.pointer.y * 0.3,
       0.06
     );
     groupRef.current.rotation.z = THREE.MathUtils.lerp(
       groupRef.current.rotation.z,
-      -state.pointer.x * 0.2,
+      -state.pointer.x * 0.16,
       0.06
     );
   });
 
   return (
     <group ref={groupRef}>
-      {blockPositions.map((position, idx) => (
-        <Float key={`${position[0]}-${position[1]}`} speed={1.2 + idx * 0.08} rotationIntensity={0.6}>
-          <mesh position={position} castShadow receiveShadow>
-            <boxGeometry args={[0.8, 0.8, 0.8]} />
+      {blockPositions.map((position, index) => (
+        <Float key={`${position[0]}-${position[1]}`} speed={1.1 + index * 0.08} rotationIntensity={0.6}>
+          <mesh position={position}>
+            <boxGeometry args={[0.82, 0.82, 0.82]} />
             <meshPhysicalMaterial
               color="#89ffe0"
               roughness={0.08}
               metalness={0.18}
               clearcoat={1}
-              clearcoatRoughness={0.1}
-              transmission={0.72}
+              clearcoatRoughness={0.08}
+              transmission={0.75}
               thickness={1.8}
               emissive="#2dff81"
               emissiveIntensity={0.42}
             />
-            <Edges color="#66ff95" />
+            <Edges color="#6dffb3" />
           </mesh>
         </Float>
       ))}
@@ -75,22 +75,22 @@ function CryptoSymbols() {
   return (
     <group ref={coinGroup}>
       <Float speed={1.1} rotationIntensity={0.5}>
-        <mesh position={[-2.2, 1.1, -0.6]}>
+        <mesh position={[-2.2, 1, -0.6]}>
           <cylinderGeometry args={[0.55, 0.55, 0.14, 36]} />
-          <meshStandardMaterial color="#8df5ff" metalness={0.8} roughness={0.12} />
+          <meshStandardMaterial color="#8df5ff" metalness={0.86} roughness={0.12} />
         </mesh>
-        <Text position={[-2.2, 1.1, -0.5]} fontSize={0.5} color="#0c1a24" anchorX="center" anchorY="middle">
-          Ξ
+        <Text position={[-2.2, 1, -0.5]} fontSize={0.48} color="#0d1a25" anchorX="center" anchorY="middle">
+          ETH
         </Text>
       </Float>
 
       <Float speed={1.2} rotationIntensity={0.5}>
-        <mesh position={[2.25, 0.7, -0.8]}>
+        <mesh position={[2.2, 0.7, -0.8]}>
           <cylinderGeometry args={[0.55, 0.55, 0.14, 36]} />
           <meshStandardMaterial color="#d5f9ff" metalness={0.95} roughness={0.18} />
         </mesh>
-        <Text position={[2.25, 0.7, -0.7]} fontSize={0.42} color="#0f1820" anchorX="center" anchorY="middle">
-          ₿
+        <Text position={[2.2, 0.7, -0.7]} fontSize={0.44} color="#0f1820" anchorX="center" anchorY="middle">
+          BTC
         </Text>
       </Float>
     </group>
@@ -101,7 +101,7 @@ function HeroScene() {
   return (
     <>
       <color attach="background" args={['#0b0f17']} />
-      <fog attach="fog" args={['#09141d', 5, 15]} />
+      <fog attach="fog" args={['#071017', 5, 16]} />
       <ambientLight intensity={0.38} />
       <pointLight position={[0, 2, 4]} intensity={1.4} color="#71ffc8" />
       <spotLight
@@ -110,7 +110,6 @@ function HeroScene() {
         penumbra={1}
         intensity={2.4}
         color="#54d9ff"
-        castShadow
       />
 
       <Sparkles
@@ -124,11 +123,11 @@ function HeroScene() {
       <EncryptedBlocks />
       <CryptoSymbols />
       <mesh position={[0, 0.2, -1.8]}>
-        <sphereGeometry args={[2.9, 32, 32]} />
+        <sphereGeometry args={[3, 32, 32]} />
         <meshBasicMaterial color="#4dff9f" transparent opacity={0.08} />
       </mesh>
-      <mesh position={[0.7, -0.3, -2.2]}>
-        <sphereGeometry args={[3.8, 32, 32]} />
+      <mesh position={[0.7, -0.4, -2.2]}>
+        <sphereGeometry args={[3.6, 32, 32]} />
         <meshBasicMaterial color="#5ed1ff" transparent opacity={0.05} />
       </mesh>
     </>
@@ -136,7 +135,6 @@ function HeroScene() {
 }
 
 export default function HeroCinematic3D() {
-  const heroRef = useRef(null);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const cardsRef = useRef(null);
@@ -144,13 +142,13 @@ export default function HeroCinematic3D() {
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.fromTo(titleRef.current, { y: 48, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1 })
-      .fromTo(subtitleRef.current, { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.6')
+    tl.fromTo(titleRef.current, { y: 42, opacity: 0 }, { y: 0, opacity: 1, duration: 1.05 })
+      .fromTo(subtitleRef.current, { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.72 }, '-=0.5')
       .fromTo(
         cardsRef.current?.children || [],
         { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.12 },
-        '-=0.35'
+        { y: 0, opacity: 1, duration: 0.7, stagger: 0.1 },
+        '-=0.3'
       );
   }, []);
 
@@ -161,34 +159,63 @@ export default function HeroCinematic3D() {
     setParallax({ x, y });
   }
 
+  function scrollToTrading() {
+    const target = document.getElementById('trading-terminal');
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   return (
-    <section ref={heroRef} className="cinematic-hero" onMouseMove={handleMouseMove}>
-      <div className="hero-canvas-layer">
+    <section
+      className="relative mb-10 h-[100vh] min-h-[760px] w-full overflow-hidden"
+      onMouseMove={handleMouseMove}
+    >
+      <div className="absolute inset-0 z-[1]">
         <Canvas camera={{ position: [0, 0, 6], fov: 42 }} dpr={[1, 1.8]}>
           <HeroScene />
         </Canvas>
       </div>
 
-      <div className="hero-grid-overlay" style={{ transform: `translate(${parallax.x * 8}px, ${parallax.y * 8}px)` }} />
-      <div className="hero-glow-wave wave-a" />
-      <div className="hero-glow-wave wave-b" />
+      <div
+        className="pointer-events-none absolute inset-0 z-[2] opacity-45"
+        style={{
+          transform: `translate(${parallax.x * 10}px, ${parallax.y * 10}px)`,
+          backgroundImage:
+            'linear-gradient(rgba(99,151,198,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(99,151,198,0.12) 1px, transparent 1px)',
+          backgroundSize: '56px 56px',
+          maskImage: 'radial-gradient(circle at center, black 30%, transparent 78%)',
+        }}
+      />
+      <div className="sb-radial-glow -left-[20vw] -top-[20vw] z-[3] h-[58vw] w-[58vw] bg-emerald-300/30" />
+      <div className="sb-radial-glow -bottom-[24vw] -right-[16vw] z-[3] h-[62vw] w-[62vw] bg-cyan-300/24" />
 
-      <div className="hero-content">
-        <h1 ref={titleRef} className="hero-title-cinematic">
-          Encrypted Execution Layer
+      <div className="pointer-events-none relative z-[5] flex h-full flex-col items-center justify-center px-4 text-center">
+        <h1 ref={titleRef} className="sb-heading-xl max-w-6xl leading-[0.95]">
+          <span className="sb-text-gradient">Invisible Trading Layer</span>
         </h1>
-        <p ref={subtitleRef} className="hero-subtitle-cinematic">
-          Invisible to bots. Built for institutions.
+        <p ref={subtitleRef} className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
+          Execute trades without exposing intent.
+        </p>
+        <p className="max-w-2xl text-sm text-slate-400 md:text-base">
+          Client-side encryption, private on-chain matching, and secure local decryption.
         </p>
 
-        <div ref={cardsRef} className="floating-feature-cards">
+        <div className="pointer-events-auto mt-8 flex flex-wrap items-center justify-center gap-3">
+          <button type="button" className="sb-button-primary min-w-52" onClick={scrollToTrading}>
+            Start Private Execution
+          </button>
+          <a href="#secure-end" className="sb-button-ghost min-w-44">
+            View Secure Outcome
+          </a>
+        </div>
+
+        <div ref={cardsRef} className="pointer-events-auto mt-8 flex flex-wrap justify-center gap-3">
           {['Encrypted Orders', 'Private Matching', 'Zero MEV'].map((item) => (
             <motion.div
               key={item}
-              className="floating-feature-card"
-              whileHover={{ y: -8, boxShadow: '0 0 42px rgba(71, 255, 161, 0.33)' }}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              className="rounded-2xl border border-cyan-200/30 bg-slate-900/45 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 backdrop-blur-md"
+              whileHover={{ y: -6, scale: 1.02, boxShadow: '0 0 38px rgba(71, 255, 161, 0.28)' }}
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
             >
               {item}
             </motion.div>

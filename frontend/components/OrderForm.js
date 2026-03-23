@@ -623,21 +623,29 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
   }
 
   return (
-    <div className="glass card order-card">
-      <div className="order-header">
+    <div className="sb-card h-full">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="eyebrow">Execution</p>
-          <h3>Place Encrypted Order</h3>
+          <p className="sb-eyebrow">Execution Terminal</p>
+          <h3 className="sb-heading-lg mt-2 text-2xl">Place Encrypted Order</h3>
+          <p className="sb-muted mt-2">Client-side encryption → on-chain private matching.</p>
         </div>
-        <span className={`status-pill ${loading ? 'active' : ''}`}>
+        <span
+          className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+            loading
+              ? 'border-cyan-300/45 bg-cyan-400/10 text-cyan-100'
+              : 'border-slate-500/40 bg-slate-800/45 text-slate-300'
+          }`}
+        >
           <ScrambleText active={loading} text={encryptionLabel} />
         </span>
       </div>
 
-      <form className="order-form" onSubmit={handleSubmit}>
-        <label>
-          Price (uint32)
+      <form className="mt-5 grid gap-3" onSubmit={handleSubmit}>
+        <label className="grid gap-2 text-sm" title="This step encrypts your order price on client">
+          <span className="text-slate-200">Price (uint32)</span>
           <input
+            className="sb-input"
             type="number"
             min="1"
             max="4294967295"
@@ -648,9 +656,10 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
           />
         </label>
 
-        <label>
-          Amount (uint32)
+        <label className="grid gap-2 text-sm" title="This step encrypts your order amount on client">
+          <span className="text-slate-200">Amount (uint32)</span>
           <input
+            className="sb-input"
             type="number"
             min="1"
             max="4294967295"
@@ -661,22 +670,26 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
           />
         </label>
 
-        <label>
-          Side
-          <select value={orderType} onChange={(event) => setOrderType(event.target.value)}>
+        <label className="grid gap-2 text-sm" title="Buy or sell side for encrypted intent">
+          <span className="text-slate-200">Side</span>
+          <select
+            className="sb-input"
+            value={orderType}
+            onChange={(event) => setOrderType(event.target.value)}
+          >
             <option value="buy">Buy</option>
             <option value="sell">Sell</option>
           </select>
         </label>
 
-        <button type="submit" className="btn" disabled={loading || !isConnected}>
+        <button type="submit" className="sb-button-primary mt-1 w-full" disabled={loading || !isConnected}>
           {loading ? 'Processing...' : 'Encrypt & Submit Order'}
         </button>
       </form>
 
       {message ? (
         <motion.p
-          className="status-message"
+          className="mt-4 rounded-xl border border-cyan-200/30 bg-cyan-400/10 px-3 py-2 text-sm text-cyan-100"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -685,10 +698,10 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
       ) : null}
 
       {txHash ? (
-        <p className="muted small mono">
+        <p className="mt-3 break-all font-mono text-xs text-slate-300">
           tx:{' '}
           {txExplorerUrl ? (
-            <a href={txExplorerUrl} target="_blank" rel="noreferrer">
+            <a className="text-cyan-200 underline-offset-2 hover:underline" href={txExplorerUrl} target="_blank" rel="noreferrer">
               {txHash}
             </a>
           ) : (
@@ -697,7 +710,11 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
         </p>
       ) : null}
 
-      {error ? <p className="error-text">{error}</p> : null}
+      {error ? (
+        <p className="mt-3 rounded-xl border border-rose-300/35 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function scrambleHex(value) {
   if (!value) return '0x••••••••••••••••';
@@ -18,10 +18,10 @@ export default function ProofOfEncryption({ flowState }) {
 
   const plaintextLine = flowState?.plaintext
     ? `plaintext: ${flowState.plaintext.orderType} ${flowState.plaintext.amount} @ ${flowState.plaintext.price}`
-    : 'plaintext: pending input';
+    : 'plaintext: awaiting input';
   const encryptedLine = flowState?.encrypted
     ? `encrypted: ${scrambleHex(flowState.encrypted.priceCtHash)}`
-    : 'encrypted: awaiting cofhe payload';
+    : 'encrypted: processing...';
   const hashLine = flowState?.matched?.txHash
     ? `hash-proof: ${flowState.matched.txHash}`
     : 'hash-proof: awaiting on-chain tx';
@@ -43,44 +43,54 @@ export default function ProofOfEncryption({ flowState }) {
   }, [sequence.length]);
 
   return (
-    <section className="glass card proof-cinematic-card">
-      <p className="eyebrow">Proof of Encryption</p>
-      <h3>Plaintext {'->'} Encrypted {'->'} On-Chain Hash</h3>
+    <section className="sb-card">
+      <p className="sb-eyebrow">Proof of Encryption</p>
+      <h3 className="sb-heading-lg mt-2 text-2xl md:text-3xl">Plaintext → Encrypted → On-Chain Hash</h3>
 
-      <div className="terminal-proof">
-        <div className="terminal-head">
-          <span className="dot red" />
-          <span className="dot yellow" />
-          <span className="dot green" />
-          <span className="terminal-title">shadowbook-proof-terminal</span>
+      <div className="mt-5 overflow-hidden rounded-2xl border border-cyan-200/25 bg-slate-950/70">
+        <div className="flex items-center gap-2 border-b border-white/10 bg-slate-900/80 px-4 py-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
+          <span className="ml-2 text-xs tracking-[0.08em] text-slate-400">shadowbook-proof-terminal</span>
         </div>
 
-        <div className="terminal-body">
-          <p className="terminal-line">
-            <span>$</span> encrypt --before-mempool
+        <div className="space-y-2 px-4 py-4 font-mono text-sm">
+          <p className="text-slate-400">
+            <span className="text-cyan-200">$</span>
+            {' '}
+            encrypt --before-mempool
           </p>
           <AnimatePresence mode="wait">
             <motion.p
               key={sequence[step].label}
-              className="terminal-line active"
+              className="text-cyan-100"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.35 }}
             >
-              <span>{sequence[step].label}:</span> {sequence[step].text}
-              <span className="cursor">_</span>
+              <span className="text-cyan-300">{sequence[step].label}:</span>
+              {' '}
+              {sequence[step].text}
+              <span className="ml-1 animate-pulse">_</span>
             </motion.p>
           </AnimatePresence>
-          <p className="terminal-line hash">
-            <span>on-chain:</span> {hashLine}
+          <p className="break-all text-emerald-200">
+            <span className="text-emerald-300">on-chain:</span>
+            {' '}
+            {hashLine}
           </p>
         </div>
       </div>
 
-      <div className="proof-badges-row">
-        <span className="proof-label">Encrypted before mempool</span>
-        <span className="proof-label">Verifiable on-chain</span>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <span className="rounded-full border border-emerald-300/40 bg-emerald-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-100">
+          Encrypted before mempool
+        </span>
+        <span className="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-100">
+          Verifiable on-chain
+        </span>
       </div>
     </section>
   );
