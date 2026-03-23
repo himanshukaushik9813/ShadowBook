@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { IS_DEPLOYED, SHADOWBOOK_ADDRESS, SHADOWBOOK_CHAIN_ID } from '../constants/config';
 import ArchitectureFlow from './ArchitectureFlow';
 import CofheBridge from './CofheBridge';
+import CursorAura from './CursorAura';
 import EncryptedOrderBook from './EncryptedOrderBook';
 import ExecutionReplayMode from './ExecutionReplayMode';
 import FlowPipeline from './FlowPipeline';
@@ -12,6 +13,7 @@ import InstitutionModePanel from './InstitutionModePanel';
 import OrderForm from './OrderForm';
 import ProofOfEncryption from './ProofOfEncryption';
 import ShadowAI from './ShadowAI';
+import VerifiableExecutionProofPanel from './VerifiableExecutionProofPanel';
 import WalletPanel from './WalletPanel';
 
 const HeroCinematic3D = dynamic(() => import('./HeroCinematic3D'), {
@@ -132,6 +134,7 @@ function Dashboard() {
       <main className="relative overflow-x-clip pb-28">
         <div className="sb-grid-bg" />
         <div className="sb-noise" />
+        <CursorAura />
 
         <HeroCinematic3D />
 
@@ -217,6 +220,16 @@ function Dashboard() {
           transition={{ duration: 0.65 }}
         >
           <FlowPipeline flowState={flowState} />
+        </motion.section>
+
+        <motion.section
+          className="sb-container relative z-[2] mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.65 }}
+        >
+          <VerifiableExecutionProofPanel flowState={flowState} />
         </motion.section>
 
         <motion.section

@@ -78,7 +78,7 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
   const userId = address || 'anonymous';
 
   const threadRef = useRef(null);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [lastInteractionAt, setLastInteractionAt] = useState(Date.now());
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);

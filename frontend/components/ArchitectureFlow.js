@@ -6,42 +6,35 @@ const STEPS = [
     title: 'User',
     subtitle: 'Order intent',
     helper: 'Plaintext captured in client',
-    icon: 'U',
+    icon: '👤',
   },
   {
     key: 'encrypt',
     title: 'Encrypt',
     subtitle: 'Client-side encryption',
     helper: 'Order values converted to ciphertext',
-    icon: 'E',
-  },
-  {
-    key: 'submit',
-    title: 'Submit',
-    subtitle: 'On-chain transport',
-    helper: 'Ciphertext submitted to smart contract',
-    icon: 'S',
+    icon: '🔐',
   },
   {
     key: 'match',
-    title: 'Match',
+    title: 'Encrypted Matching',
     subtitle: 'Encrypted matching',
     helper: 'Price/size checks run on encrypted state',
-    icon: 'M',
+    icon: '⚙️',
+  },
+  {
+    key: 'onchain',
+    title: 'On-chain',
+    subtitle: 'Settlement on testnet',
+    helper: 'Verified transaction receipt + event logs',
+    icon: '⛓',
   },
   {
     key: 'decrypt',
     title: 'Decrypt',
     subtitle: 'Secure decryption',
     helper: 'Execution result revealed locally',
-    icon: 'D',
-  },
-  {
-    key: 'result',
-    title: 'Result',
-    subtitle: 'Private execution',
-    helper: 'Filled / no-fill status displayed',
-    icon: 'R',
+    icon: '🔓',
   },
 ];
 
@@ -55,13 +48,13 @@ export default function ArchitectureFlow() {
         <p className="sb-eyebrow">Architecture Flow</p>
         <h3 className="sb-heading-lg mt-2 text-2xl md:text-3xl">Secure Execution Graph</h3>
         <p className="sb-muted mt-2">
-          User → Encrypt → Submit → Match → Decrypt → Result
+          User → Encrypt (client) → Encrypted Matching → On-chain → Decrypt Result
         </p>
       </div>
 
       <div className="relative mt-8 overflow-x-auto pb-1">
-        <div className="min-w-[880px]">
-          <div className="grid grid-cols-6 items-start gap-4">
+        <div className="min-w-[760px]">
+          <div className="grid grid-cols-5 items-start gap-4">
             {STEPS.map((step, index) => (
               <div key={step.key} className="relative">
                 <motion.div
@@ -69,7 +62,7 @@ export default function ArchitectureFlow() {
                   whileHover={{ scale: 1.02 }}
                 >
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-emerald-300/40 bg-emerald-300/12 font-display text-sm font-semibold text-emerald-100 shadow-sbGlow">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-emerald-300/40 bg-emerald-300/12 text-sm shadow-sbGlow">
                       {step.icon}
                     </div>
                     <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Step {index + 1}</span>
