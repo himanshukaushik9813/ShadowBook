@@ -183,7 +183,7 @@ function AppTopNavbar({ onOpenMenu }) {
             <button
               type="button"
               onClick={onOpenMenu}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white sm:hidden"
             >
               <MenuIcon />
               Menu
@@ -221,7 +221,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white sm:hidden"
             aria-label="Close navigation"
           >
             <CloseIcon />
@@ -279,7 +279,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
+    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] sm:flex sm:flex-col">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -292,7 +292,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-[44] bg-black/60 md:hidden"
+            className="fixed inset-0 z-[44] bg-black/60 sm:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -301,7 +301,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
             aria-label="Close navigation overlay"
           />
           <motion.aside
-            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] md:hidden"
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] sm:hidden"
             initial={{ x: -24, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -24, opacity: 0 }}
@@ -317,7 +317,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
 
 function MobileNav({ activeSection, onChange }) {
   return (
-    <div className="mb-6 flex w-full gap-2 overflow-x-auto pb-1 pt-1 md:hidden">
+    <div className="mb-6 flex w-full gap-2 overflow-x-auto pb-1 pt-1 sm:hidden">
       {NAV_ITEMS.map((item) => {
         const active = activeSection === item.key;
         return (
@@ -860,7 +860,7 @@ function Dashboard() {
           onClose={() => setMobileSidebarOpen(false)}
         />
 
-        <div className="min-w-0 w-full md:pl-[252px]">
+        <div className="min-w-0 w-full sm:pl-[252px]">
           <div className="sb-app-container relative z-[2] py-5 lg:py-7">
               <AppTopNavbar onOpenMenu={() => setMobileSidebarOpen(true)} />
               <DashboardHeader
