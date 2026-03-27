@@ -55,16 +55,18 @@ export default function FlowPipeline({ flowState }) {
     <section className="sb-card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="sb-eyebrow">Execution Pipeline</p>
-          <h3 className="sb-heading-lg mt-2 text-2xl md:text-3xl">Live Step-by-Step Flow</h3>
+          <p className="sb-eyebrow">Execution Status</p>
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
+            Settlement progress
+          </h3>
         </div>
         <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
+          className={`rounded-full border px-3 py-1 text-xs font-medium ${
             tx.status === 'confirmed'
-              ? 'border-emerald-300/45 bg-emerald-300/10 text-emerald-100'
+              ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] text-[#ffe0c2]'
               : tx.status === 'failed'
-                ? 'border-rose-300/45 bg-rose-400/10 text-rose-100'
-                : 'border-cyan-200/30 bg-cyan-300/10 text-cyan-100'
+                ? 'border-rose-200/20 bg-rose-200/[0.05] text-rose-100'
+                : 'border-white/10 bg-white/[0.03] text-slate-200'
           }`}
         >
           {txLabel(tx.status)}
@@ -77,9 +79,7 @@ export default function FlowPipeline({ flowState }) {
 
       <div className="mt-4 h-2 overflow-hidden rounded-full border border-white/10 bg-slate-900/75">
         <motion.span
-          className={`block h-full rounded-full ${
-            hasError ? 'bg-gradient-to-r from-rose-400 to-orange-300' : 'bg-gradient-to-r from-emerald-300 to-cyan-300'
-          }`}
+          className={`block h-full rounded-full ${hasError ? 'bg-rose-300/80' : 'bg-[#ffb36b]/80'}`}
           initial={false}
           animate={{ width: `${progress}%` }}
           transition={{ type: 'spring', stiffness: 110, damping: 20, mass: 0.6 }}
@@ -96,7 +96,7 @@ export default function FlowPipeline({ flowState }) {
               {' '}
               |
               {' '}
-              <a className="text-cyan-200 underline-offset-2 hover:underline" href={tx.explorerUrl} target="_blank" rel="noreferrer">
+              <a className="text-[#ffd8b2] underline-offset-2 hover:underline" href={tx.explorerUrl} target="_blank" rel="noreferrer">
                 View Explorer
               </a>
             </>
@@ -113,37 +113,39 @@ export default function FlowPipeline({ flowState }) {
           const isError = current.state === 'error';
 
           const colorClass = isCompleted
-            ? 'border-emerald-300/40 bg-emerald-300/10'
+            ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08]'
             : isActive
-              ? 'border-cyan-300/45 bg-cyan-400/10 shadow-sbBlueGlow'
+              ? 'border-white/12 bg-white/[0.045]'
               : isError
-                ? 'border-rose-300/45 bg-rose-400/10'
-                : 'border-white/10 bg-slate-900/45';
+                ? 'border-rose-200/20 bg-rose-200/[0.05]'
+                : 'border-white/8 bg-white/[0.025]';
 
           return (
             <motion.article
               key={stage.key}
-              className={`rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-1 ${colorClass}`}
+              className={`rounded-2xl border p-4 ${colorClass}`}
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.25 }}
               transition={{ delay: index * 0.06, duration: 0.35 }}
             >
               <div className="flex items-start gap-2">
-                <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full border border-white/20 text-xs font-semibold text-slate-100">
+                <span className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full border text-xs font-semibold ${
+                  isCompleted ? 'border-[#ffb36b]/18 text-[#ffe0c2]' : 'border-white/20 text-slate-100'
+                }`}>
                   {isCompleted ? '✓' : index + 1}
                 </span>
                 <div>
-                  <p className="sb-eyebrow text-[10px]">{stage.title}</p>
+                  <p className="text-sm font-medium text-white">{stage.title}</p>
                   <p className="mt-1 text-xs text-slate-300">{stage.description}</p>
                 </div>
               </div>
 
-              <p className="mt-3 text-xs uppercase tracking-[0.16em] text-slate-400">
+              <p className="mt-3 text-xs text-slate-500">
                 {current.label || (current.state === 'processing' ? 'Processing...' : 'Awaiting input')}
               </p>
 
-              <div className="mt-2 min-h-24 rounded-lg border border-white/10 bg-black/25 p-2">
+              <div className="mt-2 min-h-24 rounded-lg border border-white/10 bg-[rgba(8,7,6,0.5)] p-2">
                 {payload ? (
                   <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-slate-200">
                     {payload}

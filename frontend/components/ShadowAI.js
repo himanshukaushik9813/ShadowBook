@@ -4,11 +4,22 @@ import { useAccount } from 'wagmi';
 
 import { chatApi } from '../lib/ghostfiApi';
 
-const QUICK_PROMPTS = ['Try placing a trade', 'View encrypted proof', 'status', 'last tx', 'encryption info'];
+const QUICK_PROMPTS = [
+  'Execute private trade',
+  'Show last transaction',
+  'Explain proof',
+  'status',
+  'last tx',
+  'encryption info',
+];
 
 function formatTime(ts) {
   try {
-    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return new Date(ts).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
   } catch (_error) {
     return '--:--';
   }
@@ -49,9 +60,15 @@ function resolveCommand(input, flowState, actionText) {
     return `System status: stage=${stage}, tx=${txStatus}. ${msg}`;
   }
 
-  if (normalized === 'last tx' || normalized === 'last transaction') {
+  if (
+    normalized === 'last tx' ||
+    normalized === 'last transaction' ||
+    normalized === 'show last transaction'
+  ) {
     const hash = flowState?.tx?.hash;
-    if (!hash) return 'No transaction yet. Submit an encrypted order to start telemetry.';
+    if (!hash) {
+      return 'No transaction observed yet. Execute a trade first and I will surface the latest settlement hash.';
+    }
     return `Last tx: ${hash}. Explorer: ${flowState?.tx?.explorerUrl || 'Unavailable'}`;
   }
 
@@ -62,30 +79,159 @@ function resolveCommand(input, flowState, actionText) {
     return `Encryption info: priceCt=${getShortHash(flowState.encrypted.priceCtHash)}, amountCt=${getShortHash(flowState.encrypted.amountCtHash)}. ${getStageSummary(flowState)}`;
   }
 
-  if (normalized === 'try placing a trade') {
-    return 'Enter price and amount, then click Encrypt & Submit Order. I will stream each stage live.';
+  if (normalized === 'execute private trade') {
+    return 'Open the Trade workspace, enter price and amount, then click Encrypt & Execute. ShadowBook will package, relay, settle, and decrypt progressively.';
   }
 
-  if (normalized === 'view encrypted proof') {
-    return 'Open the Proof of Encryption panel to inspect plaintext, ciphertext, and on-chain hash proof.';
+  if (normalized === 'explain proof') {
+    return 'The proof workspace shows tx hash, proof digest, signature validity, inclusion confirmation, and final settlement state. It is the trust surface, not decoration.';
   }
 
   return null;
 }
 
-export default function ShadowAI({ actionText, logs, institutionMode, flowState }) {
+function ConsoleBody({
+  actionText,
+  institutionMode,
+  latestLogs,
+  messages,
+  typingText,
+  error,
+  inputValue,
+  isLoading,
+  onSubmit,
+  onChange,
+  onPrompt,
+  threadRef,
+  markInteraction,
+}) {
+  return (
+    <div className="space-y-3 px-4 py-4" onMouseMove={markInteraction}>
+      <div className="rounded-xl border border-[#ffb36b]/16 bg-[rgba(18,14,11,0.68)] px-3 py-2">
+        <p className="text-sm text-[#ffe0c2]">{actionText || 'Monitoring private execution...'}</p>
+        {institutionMode ? (
+          <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-[#ffcf9a]">
+            Institution Grade Privacy Active
+          </p>
+        ) : null}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {QUICK_PROMPTS.map((prompt) => (
+          <button
+            key={prompt}
+            type="button"
+            className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-slate-300 transition hover:border-[#ffb36b]/16 hover:bg-white/[0.04] hover:text-[#ffe0c2]"
+            onClick={() => onPrompt(prompt)}
+            disabled={isLoading}
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+
+      <div
+        ref={threadRef}
+        className="max-h-72 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-[rgba(8,7,6,0.48)] p-2.5"
+      >
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[88%] rounded-xl border px-3 py-2 ${
+                message.role === 'user'
+                  ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08] text-[#ffe0c2]'
+                  : message.phase === 'error'
+                    ? 'border-rose-300/25 bg-rose-500/[0.06] text-rose-100'
+                    : 'border-white/10 bg-white/[0.03] text-slate-100'
+              }`}
+            >
+              <p className="text-sm leading-relaxed">{message.text}</p>
+              <time className="mt-1 block text-[10px] text-slate-400">
+                {formatTime(message.timestamp)}
+              </time>
+            </div>
+          </div>
+        ))}
+
+        {typingText ? (
+          <div className="flex justify-start">
+            <div className="max-w-[88%] rounded-xl border border-[#ffb36b]/16 bg-[rgba(18,14,11,0.74)] px-3 py-2 text-slate-100">
+              <p className="text-sm">
+                {typingText}
+                <span className="ml-1 animate-pulse">_</span>
+              </p>
+              <time className="mt-1 block text-[10px] text-slate-400">
+                {formatTime(Date.now())}
+              </time>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {error ? (
+        <p className="rounded-lg border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+          {error}
+        </p>
+      ) : null}
+
+      <form className="flex gap-2" onSubmit={onSubmit}>
+        <input
+          type="text"
+          className="sb-input h-10"
+          placeholder="Try: status, last tx, explain proof"
+          value={inputValue}
+          onChange={onChange}
+          disabled={isLoading}
+        />
+        <button
+          type="submit"
+          className="sb-button-primary h-10 min-w-20 px-3"
+          disabled={isLoading || !inputValue.trim()}
+        >
+          {isLoading ? '...' : 'Send'}
+        </button>
+      </form>
+
+      <div className="max-h-28 space-y-1 overflow-y-auto rounded-lg border border-white/10 bg-[rgba(8,7,6,0.42)] p-2">
+        {latestLogs.map((log) => (
+          <p
+            key={`${log.timestamp}-${log.message}`}
+            className="grid grid-cols-[70px_1fr] gap-2 text-[11px] text-slate-300"
+          >
+            <span className="font-mono text-slate-500">{formatTime(log.timestamp)}</span>
+            <span>{log.message}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ShadowAI({
+  actionText,
+  logs,
+  institutionMode,
+  flowState,
+  embedded = false,
+}) {
   const { address } = useAccount();
   const userId = address || 'anonymous';
 
   const threadRef = useRef(null);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(!embedded ? false : true);
   const [lastInteractionAt, setLastInteractionAt] = useState(Date.now());
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [typingText, setTypingText] = useState('');
   const [error, setError] = useState('');
   const [messages, setMessages] = useState(() => [
-    createMessage('bot', 'Shadow AI online. I monitor encryption, transaction state, and private matching in real time.'),
+    createMessage(
+      'bot',
+      'Shadow AI online. I monitor execution state, explain proofs, and surface the last known transaction.'
+    ),
   ]);
   const [lastSignature, setLastSignature] = useState('');
 
@@ -96,10 +242,10 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
   }
 
   useEffect(() => {
-    if (!expanded || isLoading) return undefined;
+    if (embedded || !expanded || isLoading) return undefined;
     const timeout = setTimeout(() => setExpanded(false), 7000);
     return () => clearTimeout(timeout);
-  }, [expanded, isLoading, lastInteractionAt]);
+  }, [embedded, expanded, isLoading, lastInteractionAt]);
 
   useEffect(() => {
     if (!threadRef.current) return;
@@ -121,13 +267,15 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
     const stage = flowState?.pipeline?.currentStage;
     const txStatus = flowState?.tx?.status;
     let text = actionText;
-    if (stage === 'encrypted') text = 'Order encrypted successfully. Ciphertext ready for chain submission.';
-    if (txStatus === 'pending') text = 'Transaction submitted. Waiting for secure confirmation.';
-    if (stage === 'matched') text = 'Private matching in progress. No MEV risk detected.';
-    if (stage === 'decrypted') text = 'Result decrypted locally. Execution remained private end to end.';
-    if (txStatus === 'failed') text = 'Execution hit an error. I can help diagnose using status command.';
+    if (stage === 'encrypted') text = 'Capturing intent complete. Client-side encryption succeeded.';
+    if (txStatus === 'pending') text = 'Submitting through private relay. Waiting for settlement confirmation.';
+    if (stage === 'matched') text = 'Matching privately on encrypted state. No MEV detected.';
+    if (stage === 'decrypted') text = 'Decryption complete. Result only visible to the wallet owner.';
+    if (txStatus === 'failed') text = 'Execution error detected. Run "status" for a direct summary.';
 
-    setMessages((previous) => [...previous, createMessage('bot', text, txStatus === 'failed' ? 'error' : 'info')].slice(-28));
+    setMessages((previous) =>
+      [...previous, createMessage('bot', text, txStatus === 'failed' ? 'error' : 'info')].slice(-28)
+    );
   }, [
     actionText,
     flowState?.pipeline?.currentStage,
@@ -173,7 +321,9 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
     } catch (chatError) {
       setTypingText('');
       setError(chatError.message || 'Unable to get response.');
-      setMessages((previous) => [...previous, createMessage('bot', 'Secure AI channel unavailable. Please retry.', 'error')].slice(-28));
+      setMessages((previous) =>
+        [...previous, createMessage('bot', 'Secure AI channel unavailable. Please retry.', 'error')].slice(-28)
+      );
     } finally {
       setIsLoading(false);
     }
@@ -184,10 +334,49 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
     sendMessage(inputValue);
   }
 
+  const body = (
+    <ConsoleBody
+      actionText={actionText}
+      institutionMode={institutionMode}
+      latestLogs={latestLogs}
+      messages={messages}
+      typingText={typingText}
+      error={error}
+      inputValue={inputValue}
+      isLoading={isLoading}
+      onSubmit={handleSubmit}
+      onChange={(event) => {
+        setInputValue(event.target.value);
+        markInteraction();
+      }}
+      onPrompt={sendMessage}
+      threadRef={threadRef}
+      markInteraction={markInteraction}
+    />
+  );
+
+  if (embedded) {
+    return (
+      <section className="sb-card relative overflow-hidden">
+        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
+        <div className="flex items-center gap-3 border-b border-white/10 px-1 pb-4">
+          <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.02] shadow-[0_0_26px_rgba(255,138,60,0.08)]">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#ffb36b]" />
+          </div>
+          <div>
+            <p className="sb-eyebrow text-[10px]">Shadow AI</p>
+            <p className="text-sm font-semibold text-slate-100">Command Console</p>
+          </div>
+        </div>
+        {body}
+      </section>
+    );
+  }
+
   return (
     <aside className="fixed bottom-5 right-4 z-[95] w-[min(420px,calc(100vw-20px))]">
       <motion.div
-        className="sb-glass overflow-hidden border-cyan-200/25 bg-slate-950/70 shadow-[0_22px_55px_rgba(0,0,0,0.48)]"
+        className="sb-glass overflow-hidden border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.92),rgba(11,9,8,0.9))]"
         initial={false}
         animate={{ opacity: 1 }}
       >
@@ -200,17 +389,12 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
           }}
         >
           <div className="flex items-center gap-3">
-            <div className="relative grid h-10 w-10 place-items-center rounded-full border border-emerald-300/40 bg-emerald-300/10">
-              <motion.span
-                className="absolute h-8 w-8 rounded-full border border-emerald-300/50"
-                animate={{ scale: [1, 1.35], opacity: [0.7, 0] }}
-                transition={{ duration: 1.9, repeat: Infinity, ease: 'easeOut' }}
-              />
-              <span className="h-3 w-3 rounded-full bg-emerald-300 shadow-sbGlow" />
+            <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.02] shadow-[0_0_28px_rgba(255,138,60,0.1)]">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ffb36b]" />
             </div>
             <div>
               <p className="sb-eyebrow text-[10px]">Shadow AI</p>
-              <p className="text-sm font-semibold text-slate-100">Encrypted System Assistant</p>
+              <p className="text-sm font-semibold text-slate-100">Execution Assistant</p>
             </div>
           </div>
           <div className="text-xs text-slate-400">{expanded ? 'Collapse' : 'Open'}</div>
@@ -219,96 +403,12 @@ export default function ShadowAI({ actionText, logs, institutionMode, flowState 
         <AnimatePresence initial={false}>
           {expanded ? (
             <motion.div
-              className="space-y-3 px-4 py-3"
               initial={{ opacity: 0, y: 8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 6, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              onMouseMove={markInteraction}
             >
-              <div className="rounded-xl border border-cyan-100/20 bg-slate-900/55 px-3 py-2">
-                <p className="text-sm text-cyan-100">{actionText || 'Monitoring private execution...'}</p>
-                {institutionMode ? (
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-emerald-200/90">Institution Grade Privacy Active</p>
-                ) : null}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {QUICK_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    className="rounded-full border border-cyan-200/25 bg-slate-900/45 px-3 py-1.5 text-xs text-slate-200 transition hover:border-cyan-200/45 hover:text-white"
-                    onClick={() => sendMessage(prompt)}
-                    disabled={isLoading}
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-
-              <div ref={threadRef} className="max-h-56 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/45 p-2.5">
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div
-                      className={`max-w-[88%] rounded-xl border px-3 py-2 ${
-                        message.role === 'user'
-                          ? 'border-emerald-200/30 bg-gradient-to-r from-emerald-400/25 to-cyan-300/25 text-emerald-50'
-                          : message.phase === 'error'
-                            ? 'border-rose-300/35 bg-rose-500/10 text-rose-100'
-                            : 'border-cyan-100/25 bg-slate-900/65 text-slate-100'
-                      }`}
-                    >
-                      <p className="text-sm leading-relaxed">{message.text}</p>
-                      <time className="mt-1 block text-[10px] text-slate-400">{formatTime(message.timestamp)}</time>
-                    </div>
-                  </div>
-                ))}
-
-                {typingText ? (
-                  <div className="flex justify-start">
-                    <div className="max-w-[88%] rounded-xl border border-cyan-100/25 bg-slate-900/65 px-3 py-2 text-slate-100">
-                      <p className="text-sm">
-                        {typingText}
-                        <span className="ml-1 animate-pulse">_</span>
-                      </p>
-                      <time className="mt-1 block text-[10px] text-slate-400">{formatTime(Date.now())}</time>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-
-              {error ? (
-                <p className="rounded-lg border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
-                  {error}
-                </p>
-              ) : null}
-
-              <form className="flex gap-2" onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  className="sb-input h-10"
-                  placeholder="Type: status, last tx, encryption info"
-                  value={inputValue}
-                  onChange={(event) => {
-                    setInputValue(event.target.value);
-                    markInteraction();
-                  }}
-                  disabled={isLoading}
-                />
-                <button type="submit" className="sb-button-primary h-10 min-w-20 px-3" disabled={isLoading || !inputValue.trim()}>
-                  {isLoading ? '...' : 'Send'}
-                </button>
-              </form>
-
-              <div className="max-h-24 space-y-1 overflow-y-auto rounded-lg border border-white/10 bg-black/20 p-2">
-                {latestLogs.map((log) => (
-                  <p key={`${log.timestamp}-${log.message}`} className="grid grid-cols-[70px_1fr] gap-2 text-[11px] text-slate-300">
-                    <span className="font-mono text-slate-500">{formatTime(log.timestamp)}</span>
-                    <span>{log.message}</span>
-                  </p>
-                ))}
-              </div>
+              {body}
             </motion.div>
           ) : null}
         </AnimatePresence>

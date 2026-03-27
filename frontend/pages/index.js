@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 
-const DappScreen = dynamic(() => import('../components/DappScreen'), {
+const MarketingLanding = dynamic(() => import('../components/MarketingLanding'), {
   ssr: false,
 });
 
 export default function HomePage() {
-  return <DappScreen />;
+  return <MarketingLanding />;
 }

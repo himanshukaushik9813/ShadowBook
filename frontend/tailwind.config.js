@@ -5,26 +5,26 @@ module.exports = {
     extend: {
       colors: {
         sb: {
-          bg: '#0b0f17',
-          panel: 'rgba(10, 17, 30, 0.66)',
-          border: 'rgba(117, 190, 232, 0.24)',
-          text: '#e4f2ff',
-          muted: '#96adc3',
-          neonGreen: '#3cffb6',
-          neonBlue: '#4fd7ff',
-          neonPurple: '#8a7dff',
+          bg: '#080808',
+          panel: 'rgba(18, 14, 11, 0.76)',
+          border: 'rgba(255, 255, 255, 0.08)',
+          text: '#f5efe7',
+          muted: '#a79b90',
+          neonGreen: '#ffb36b',
+          neonBlue: '#f59e0b',
+          neonPurple: '#c88b57',
           danger: '#ff5f7a',
         },
       },
       fontFamily: {
-        display: ['Oxanium', 'Sora', 'ui-sans-serif', 'system-ui'],
-        body: ['Sora', 'ui-sans-serif', 'system-ui'],
+        display: ['Inter', 'Geist', 'ui-sans-serif', 'system-ui'],
+        body: ['Inter', 'Geist', 'ui-sans-serif', 'system-ui'],
         mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       boxShadow: {
-        sbGlow: '0 0 30px rgba(60, 255, 182, 0.25)',
-        sbBlueGlow: '0 0 26px rgba(79, 215, 255, 0.24)',
-        sbPanel: '0 20px 50px rgba(2, 8, 20, 0.42)',
+        sbGlow: '0 0 0 rgba(0, 0, 0, 0)',
+        sbBlueGlow: '0 8px 24px rgba(34, 18, 8, 0.14)',
+        sbPanel: '0 18px 54px rgba(0, 0, 0, 0.34)',
       },
       keyframes: {
         sbPulse: {
@@ -56,7 +56,7 @@ module.exports = {
         sbNoise: 'sbNoise 2.8s steps(2, end) infinite',
       },
       backdropBlur: {
-        sb: '16px',
+        sb: '8px',
       },
     },
   },

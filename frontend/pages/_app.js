@@ -5,7 +5,6 @@ import { injected, walletConnect } from 'wagmi/connectors';
 
 import '@cofhe/react/styles.css';
 import '../styles/tailwind.css';
-import '../styles/globals.css';
 
 const queryClient = new QueryClient();
 

@@ -4,6 +4,7 @@
   "private": true,
   "description": "ShadowBook frontend",
   "scripts": {
+    "postinstall": "node scripts/patch-cofhe-react.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"

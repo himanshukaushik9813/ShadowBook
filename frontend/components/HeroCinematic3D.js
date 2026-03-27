@@ -37,7 +37,11 @@ function EncryptedBlocks() {
   return (
     <group ref={groupRef}>
       {blockPositions.map((position, index) => (
-        <Float key={`${position[0]}-${position[1]}`} speed={1.1 + index * 0.08} rotationIntensity={0.6}>
+        <Float
+          key={`${position[0]}-${position[1]}`}
+          speed={1.1 + index * 0.08}
+          rotationIntensity={0.6}
+        >
           <mesh position={position}>
             <boxGeometry args={[0.82, 0.82, 0.82]} />
             <meshPhysicalMaterial
@@ -49,7 +53,7 @@ function EncryptedBlocks() {
               transmission={0.75}
               thickness={1.8}
               emissive="#2dff81"
-              emissiveIntensity={0.42}
+              emissiveIntensity={0.38}
             />
             <Edges color="#6dffb3" />
           </mesh>
@@ -94,7 +98,13 @@ function CryptoSymbols() {
           <cylinderGeometry args={[0.55, 0.55, 0.14, 36]} />
           <meshStandardMaterial color="#8df5ff" metalness={0.86} roughness={0.12} />
         </mesh>
-        <Text position={[-2.2, 1, -0.5]} fontSize={0.48} color="#0d1a25" anchorX="center" anchorY="middle">
+        <Text
+          position={[-2.2, 1, -0.5]}
+          fontSize={0.48}
+          color="#0d1a25"
+          anchorX="center"
+          anchorY="middle"
+        >
           ETH
         </Text>
       </Float>
@@ -104,7 +114,13 @@ function CryptoSymbols() {
           <cylinderGeometry args={[0.55, 0.55, 0.14, 36]} />
           <meshStandardMaterial color="#d5f9ff" metalness={0.95} roughness={0.18} />
         </mesh>
-        <Text position={[2.2, 0.7, -0.7]} fontSize={0.44} color="#0f1820" anchorX="center" anchorY="middle">
+        <Text
+          position={[2.2, 0.7, -0.7]}
+          fontSize={0.44}
+          color="#0f1820"
+          anchorX="center"
+          anchorY="middle"
+        >
           BTC
         </Text>
       </Float>
@@ -119,13 +135,7 @@ function HeroScene() {
       <fog attach="fog" args={['#071017', 5, 16]} />
       <ambientLight intensity={0.38} />
       <pointLight position={[0, 2, 4]} intensity={1.4} color="#71ffc8" />
-      <spotLight
-        position={[3, 6, 2]}
-        angle={0.55}
-        penumbra={1}
-        intensity={2.4}
-        color="#54d9ff"
-      />
+      <spotLight position={[3, 6, 2]} angle={0.55} penumbra={1} intensity={2.4} color="#54d9ff" />
 
       <Sparkles
         count={180}
@@ -149,11 +159,11 @@ function HeroScene() {
   );
 }
 
-function MagneticAction({ children, className, onClick, href }) {
+function MagneticAction({ children, className, href, onClick }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 250, damping: 18, mass: 0.45 });
-  const sy = useSpring(y, { stiffness: 250, damping: 18, mass: 0.45 });
+  const springX = useSpring(x, { stiffness: 250, damping: 18, mass: 0.45 });
+  const springY = useSpring(y, { stiffness: 250, damping: 18, mass: 0.45 });
 
   function handleMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -173,7 +183,7 @@ function MagneticAction({ children, className, onClick, href }) {
       <motion.a
         href={href}
         className={className}
-        style={{ x: sx, y: sy }}
+        style={{ x: springX, y: springY }}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.99 }}
         onMouseMove={handleMove}
@@ -188,7 +198,7 @@ function MagneticAction({ children, className, onClick, href }) {
     <motion.button
       type="button"
       className={className}
-      style={{ x: sx, y: sy }}
+      style={{ x: springX, y: springY }}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.99 }}
       onClick={onClick}
@@ -200,7 +210,17 @@ function MagneticAction({ children, className, onClick, href }) {
   );
 }
 
-export default function HeroCinematic3D() {
+export default function HeroCinematic3D({
+  title = 'Invisible Trading Layer',
+  subtitle = 'Execute trades without exposing intent.',
+  description = 'Client-side encryption, private on-chain execution, and verifiable settlement without mempool leakage.',
+  primaryLabel = 'Launch App',
+  primaryHref = '/app',
+  primaryAction,
+  secondaryLabel = 'View Docs',
+  secondaryHref = '#how-it-works',
+  featureChips = [],
+}) {
   const heroRef = useRef(null);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
@@ -255,11 +275,9 @@ export default function HeroCinematic3D() {
     }
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [cursorXPx, cursorYPx]);
 
   function flushMousePosition() {
     rafRef.current = null;
@@ -282,9 +300,7 @@ export default function HeroCinematic3D() {
       pxY,
     };
 
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(flushMousePosition);
-    }
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(flushMousePosition);
   }
 
   function handleMouseLeave() {
@@ -297,20 +313,13 @@ export default function HeroCinematic3D() {
       pxX: rect.width / 2,
       pxY: rect.height / 2,
     };
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(flushMousePosition);
-    }
-  }
-
-  function scrollToTrading() {
-    const target = document.getElementById('trading-terminal');
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(flushMousePosition);
   }
 
   return (
     <section
       ref={heroRef}
-      className="relative mb-10 h-[100vh] min-h-[760px] w-full overflow-hidden"
+      className="relative min-h-[88vh] w-full overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -332,11 +341,8 @@ export default function HeroCinematic3D() {
       />
 
       <motion.div
-        className="pointer-events-none absolute inset-0 z-[2] opacity-45"
-        style={{
-          x: bgX,
-          y: bgY,
-        }}
+        className="pointer-events-none absolute inset-0 z-[2] opacity-40"
+        style={{ x: bgX, y: bgY }}
       >
         <div
           className="h-full w-full"
@@ -348,19 +354,14 @@ export default function HeroCinematic3D() {
           }}
         />
       </motion.div>
+
       <motion.div
-        className="pointer-events-none absolute z-[3] h-[58vw] w-[58vw] -left-[20vw] -top-[20vw] rounded-full bg-emerald-300/20 blur-[100px] mix-blend-screen"
-        style={{
-          x: fgX,
-          y: fgY,
-        }}
+        className="pointer-events-none absolute left-[-20vw] top-[-20vw] z-[3] h-[58vw] w-[58vw] rounded-full bg-emerald-300/18 blur-[100px] mix-blend-screen"
+        style={{ x: fgX, y: fgY }}
       />
       <motion.div
-        className="pointer-events-none absolute z-[3] h-[62vw] w-[62vw] -bottom-[24vw] -right-[16vw] rounded-full bg-cyan-300/18 blur-[110px] mix-blend-screen"
-        style={{
-          x: inverseFgX,
-          y: inverseFgY,
-        }}
+        className="pointer-events-none absolute bottom-[-24vw] right-[-16vw] z-[3] h-[62vw] w-[62vw] rounded-full bg-cyan-300/16 blur-[110px] mix-blend-screen"
+        style={{ x: inverseFgX, y: inverseFgY }}
       />
       <motion.div
         className="pointer-events-none absolute z-[3] h-[440px] w-[440px] rounded-full blur-[120px]"
@@ -368,59 +369,64 @@ export default function HeroCinematic3D() {
           x: glowX,
           y: glowY,
           background:
-            'radial-gradient(circle, rgba(70,255,176,0.28) 0%, rgba(94,209,255,0.18) 34%, rgba(94,209,255,0.06) 54%, rgba(0,0,0,0) 72%)',
+            'radial-gradient(circle, rgba(70,255,176,0.2) 0%, rgba(94,209,255,0.14) 34%, rgba(94,209,255,0.04) 54%, rgba(0,0,0,0) 72%)',
         }}
       />
-      <div className="pointer-events-none absolute inset-0 z-[4] bg-gradient-to-b from-black/60 to-black/90" />
+      <div className="pointer-events-none absolute inset-0 z-[4] bg-gradient-to-b from-black/55 via-black/72 to-black/92" />
 
       <motion.div
-        className="pointer-events-none relative z-[5] flex h-full flex-col items-center justify-center px-4 text-center"
-        style={{
-          x: contentX,
-          y: contentY,
-        }}
+        className="relative z-[5] flex min-h-[88vh] items-center px-4 py-24 text-center"
+        style={{ x: contentX, y: contentY }}
       >
-        <div className="pointer-events-auto rounded-2xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl md:p-8">
+        <div className="mx-auto max-w-5xl rounded-[28px] border border-white/10 bg-black/35 p-8 backdrop-blur-xl md:p-10">
           <h1
             ref={titleRef}
-            className="max-w-6xl text-4xl font-extrabold tracking-[0.02em] text-white md:text-5xl lg:text-7xl lg:leading-[1.08]"
-            style={{ textShadow: '0 0 20px rgba(0,255,150,0.6)' }}
+            className="mx-auto max-w-4xl bg-gradient-to-r from-emerald-300 via-cyan-200 to-cyan-400 bg-clip-text text-5xl font-extrabold tracking-[-0.03em] text-transparent md:text-6xl lg:text-7xl"
+            style={{ textShadow: '0 0 20px rgba(0,255,150,0.18)' }}
           >
-            Invisible Trading Layer
+            {title}
           </h1>
           <p
             ref={subtitleRef}
-            className="mt-5 max-w-2xl text-lg leading-relaxed tracking-[0.01em] md:text-xl"
-            style={{ color: '#A0AEC0', textShadow: '0 0 20px rgba(0,255,150,0.6)' }}
+            className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed tracking-[0.01em] text-slate-200 md:text-xl"
+            style={{ textShadow: '0 0 12px rgba(0,255,150,0.12)' }}
           >
-            Execute trades without exposing intent.
+            {subtitle}
           </p>
-          <p className="max-w-2xl text-sm leading-relaxed tracking-[0.01em] md:text-base" style={{ color: '#A0AEC0' }}>
-            Client-side encryption, private on-chain matching, and secure local decryption.
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
+            {description}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <MagneticAction className="sb-button-primary min-w-52" onClick={scrollToTrading}>
-              Start Private Execution
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <MagneticAction
+              className="sb-button-primary min-w-[220px]"
+              href={primaryHref}
+              onClick={primaryAction}
+            >
+              {primaryLabel}
             </MagneticAction>
-            <MagneticAction href="#secure-end" className="sb-button-ghost min-w-44">
-              View Secure Outcome
+            <MagneticAction className="sb-button-ghost min-w-[180px]" href={secondaryHref}>
+              {secondaryLabel}
             </MagneticAction>
           </div>
 
-          <div ref={cardsRef} className="mt-8 flex flex-wrap justify-center gap-3">
-            {['Encrypted Orders', 'Private Matching', 'Zero MEV'].map((item) => (
-              <motion.div
-                key={item}
-                className="rounded-2xl border border-cyan-200/30 bg-slate-900/45 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100 backdrop-blur-md"
-                whileHover={{ y: -6, scale: 1.02, boxShadow: '0 0 38px rgba(71, 255, 161, 0.28)' }}
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                {item}
-              </motion.div>
-            ))}
-          </div>
+          {featureChips.length ? (
+            <div ref={cardsRef} className="mt-8 flex flex-wrap justify-center gap-3">
+              {featureChips.map((item) => (
+                <motion.div
+                  key={item}
+                  className="rounded-full border border-cyan-200/20 bg-slate-900/45 px-4 py-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-200 backdrop-blur-md"
+                  whileHover={{ y: -4, scale: 1.02, boxShadow: '0 0 24px rgba(71, 255, 161, 0.16)' }}
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  {item}
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div ref={cardsRef} />
+          )}
         </div>
       </motion.div>
     </section>

@@ -623,9 +623,11 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
   }
 
   return (
-    <div className="sb-card h-full">
+    <div className="sb-card relative h-full overflow-hidden">
+      <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/28 to-transparent" />
+      <div className="absolute right-4 top-6 h-20 w-20 rounded-full bg-[#ff8a3c]/[0.06] blur-3xl" />
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="relative z-[2]">
           <p className="sb-eyebrow">Execution Terminal</p>
           <h3 className="sb-heading-lg mt-2 text-2xl">Place Encrypted Order</h3>
           <p className="sb-muted mt-2">Client-side encryption → on-chain private matching.</p>
@@ -633,8 +635,8 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
         <span
           className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
             loading
-              ? 'border-cyan-300/45 bg-cyan-400/10 text-cyan-100'
-              : 'border-slate-500/40 bg-slate-800/45 text-slate-300'
+              ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08] text-[#ffe0c2]'
+              : 'border-white/10 bg-white/[0.03] text-slate-300'
           }`}
         >
           <ScrambleText active={loading} text={encryptionLabel} />
@@ -683,13 +685,13 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
         </label>
 
         <button type="submit" className="sb-button-primary mt-1 w-full" disabled={loading || !isConnected}>
-          {loading ? 'Processing...' : 'Encrypt & Submit Order'}
+          {loading ? 'Processing...' : 'Encrypt & Execute'}
         </button>
       </form>
 
       {message ? (
         <motion.p
-          className="mt-4 rounded-xl border border-cyan-200/30 bg-cyan-400/10 px-3 py-2 text-sm text-cyan-100"
+          className="mt-4 rounded-xl border border-[#ffb36b]/20 bg-[#ff8a3c]/[0.08] px-3 py-2 text-sm text-[#ffe0c2]"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -701,7 +703,7 @@ export default function OrderForm({ onFlowUpdate, onSystemEvent }) {
         <p className="mt-3 break-all font-mono text-xs text-slate-300">
           tx:{' '}
           {txExplorerUrl ? (
-            <a className="text-cyan-200 underline-offset-2 hover:underline" href={txExplorerUrl} target="_blank" rel="noreferrer">
+            <a className="text-[#ffd8b2] underline-offset-2 hover:underline" href={txExplorerUrl} target="_blank" rel="noreferrer">
               {txHash}
             </a>
           ) : (

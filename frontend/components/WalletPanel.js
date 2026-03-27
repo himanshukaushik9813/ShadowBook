@@ -29,12 +29,12 @@ function WalletConnectIcon() {
   return (
     <svg viewBox="0 0 32 32" aria-hidden className="h-9 w-9">
       <defs>
-        <linearGradient id="wcBlue" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#58b4ff" />
-          <stop offset="100%" stopColor="#2f6fff" />
+        <linearGradient id="wcWarm" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ffb36b" />
+          <stop offset="100%" stopColor="#d9772d" />
         </linearGradient>
       </defs>
-      <rect x="3" y="3" width="26" height="26" rx="10" fill="url(#wcBlue)" />
+      <rect x="3" y="3" width="26" height="26" rx="10" fill="url(#wcWarm)" />
       <path
         d="M9 14.5c3.8-3.8 10.2-3.8 14 0M11.8 17.2c2.2-2.2 6.2-2.2 8.4 0M15.2 20.8c.4-.4 1.2-.4 1.6 0"
         fill="none"
@@ -108,6 +108,17 @@ export default function WalletPanel() {
     setIsModalOpen(false);
   }, [isConnected]);
 
+  useEffect(() => {
+    function openWalletModal() {
+      if (!isConnected) {
+        setIsModalOpen(true);
+      }
+    }
+
+    window.addEventListener('shadowbook:open-wallet', openWalletModal);
+    return () => window.removeEventListener('shadowbook:open-wallet', openWalletModal);
+  }, [isConnected]);
+
   async function handleConnect() {
     if (!selectedConnector || isPending) return;
     connect({ connector: selectedConnector });
@@ -115,33 +126,29 @@ export default function WalletPanel() {
 
   return (
     <>
-      <section className="sb-card relative h-full overflow-hidden">
-        <div className="absolute -left-8 -top-8 h-24 w-24 rounded-full bg-emerald-300/20 blur-2xl" />
-        <div className="absolute -right-8 -bottom-8 h-24 w-24 rounded-full bg-cyan-300/20 blur-2xl" />
-
-        <div className="relative">
-          <p className="sb-eyebrow">Access Layer</p>
-          <h3 className="sb-heading-lg mt-2 text-2xl">Secure Wallet Channel</h3>
-          <p className="sb-muted mt-2">Connect your wallet through encrypted session routing.</p>
+      <section id="wallet-panel" className="sb-card h-full">
+        <div>
+          <p className="sb-eyebrow">Wallet</p>
+          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
+            Connection
+          </h3>
+          <p className="sb-muted mt-2">Connect a wallet before submitting an encrypted order.</p>
         </div>
 
         {isConnected ? (
-          <div className="relative mt-6 space-y-4">
-            <div className="rounded-2xl border border-emerald-300/40 bg-emerald-300/10 p-4">
+          <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] p-4">
               <div className="flex items-center gap-3">
-                <span className="relative inline-flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75" />
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-300" />
-                </span>
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#ffb36b]" />
                 <div>
-                  <p className="text-sm font-semibold text-emerald-100">Connected Securely</p>
-                  <p className="font-mono text-xs text-emerald-50/90">{shorten(address)}</p>
+                  <p className="text-sm font-semibold text-[#ffe0c2]">Connected securely</p>
+                  <p className="font-mono text-xs text-slate-300">{shorten(address)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-cyan-200/25 bg-slate-900/45 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Network Status</p>
+            <div className="rounded-2xl border border-white/8 bg-[rgba(8,7,6,0.42)] p-4">
+              <p className="text-xs font-medium text-slate-500">Network</p>
               <p className="mt-2 text-sm font-medium text-slate-100">
                 {networkName}
                 {' '}
@@ -175,10 +182,10 @@ export default function WalletPanel() {
         ) : (
           <div className="relative mt-6 space-y-3">
             <button type="button" className="sb-button-primary w-full" onClick={() => setIsModalOpen(true)}>
-              Connect Securely
+              Connect Wallet
             </button>
-            <p className="rounded-full border border-emerald-200/20 bg-emerald-200/10 px-3 py-1.5 text-center text-xs font-medium text-emerald-100/90">
-              🔒 End-to-End Encrypted
+            <p className="rounded-full border border-white/8 bg-white/[0.02] px-3 py-1.5 text-center text-xs text-slate-400">
+              Encrypted session
             </p>
             {!injectedConnector ? (
               <p className="sb-muted">
@@ -208,18 +215,23 @@ export default function WalletPanel() {
             onClick={() => setIsModalOpen(false)}
           >
             <motion.div
-              className="w-full max-w-xl rounded-3xl border border-cyan-200/20 bg-slate-950/70 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.55)]"
+              className="relative w-full max-w-xl overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.94),rgba(11,9,8,0.92))] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.46)]"
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.97 }}
               transition={{ duration: 0.25 }}
               onClick={(event) => event.stopPropagation()}
             >
+              <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
+              <div className="absolute left-[-30px] top-14 h-24 w-24 rounded-full bg-[#ff8a3c]/[0.08] blur-[70px]" />
+              <div className="absolute bottom-10 right-[-34px] h-28 w-28 rounded-full bg-[#f59e0b]/[0.06] blur-[76px]" />
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="sb-eyebrow">Wallet Connection</p>
-                  <h3 className="sb-heading-lg mt-2 text-3xl">Connect Securely</h3>
-                  <p className="sb-muted mt-2">Choose a wallet for encrypted trading session access.</p>
+                  <h3 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white">
+                    Connect wallet
+                  </h3>
+                  <p className="sb-muted mt-2">Choose a wallet to start a private trading session.</p>
                 </div>
                 <button
                   type="button"
@@ -241,10 +253,10 @@ export default function WalletPanel() {
                       disabled={!isAvailable || isPending}
                       className={`group relative rounded-2xl border p-4 text-left transition ${
                         isSelected
-                          ? 'border-emerald-300/60 bg-gradient-to-br from-emerald-300/18 to-cyan-300/18 shadow-sbGlow'
-                          : 'border-cyan-100/20 bg-slate-900/45 hover:border-cyan-100/40 hover:shadow-sbBlueGlow'
+                          ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08]'
+                          : 'border-white/10 bg-white/[0.02] hover:border-white/16'
                       } ${!isAvailable ? 'cursor-not-allowed opacity-45' : ''}`}
-                      whileHover={isAvailable ? { scale: 1.02, y: -2 } : {}}
+                      whileHover={isAvailable ? { scale: 1.01, y: -1 } : {}}
                       whileTap={isAvailable ? { scale: 0.99 } : {}}
                       onClick={() => setSelectedWallet(wallet.key)}
                     >
@@ -256,7 +268,7 @@ export default function WalletPanel() {
                         </div>
                       </div>
                       {isSelected ? (
-                        <span className="absolute right-3 top-3 rounded-full bg-emerald-300/20 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                        <span className="absolute right-3 top-3 rounded-full bg-[#ff8a3c]/[0.08] px-2 py-1 text-[10px] font-medium text-[#ffe0c2]">
                           Selected
                         </span>
                       ) : null}
@@ -266,7 +278,7 @@ export default function WalletPanel() {
               </div>
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-                <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1.5 text-xs font-medium text-emerald-100/90">
+                <span className="rounded-full border border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08] px-3 py-1.5 text-xs font-medium text-[#ffe0c2]">
                   🔒 End-to-End Encrypted
                 </span>
                 <button
