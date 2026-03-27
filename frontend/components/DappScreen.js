@@ -183,7 +183,7 @@ function AppTopNavbar({ onOpenMenu }) {
             <button
               type="button"
               onClick={onOpenMenu}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white sm:hidden"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white min-[420px]:hidden"
             >
               <MenuIcon />
               Menu
@@ -205,6 +205,7 @@ function AppTopNavbar({ onOpenMenu }) {
 function SidebarContent({ activeSection, onChange, onClose }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+  const compactRailStatus = isConnected ? 'ON' : 'OFF';
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden px-4 py-5">
@@ -214,14 +215,18 @@ function SidebarContent({ activeSection, onChange, onClose }) {
       <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
       <div className="relative z-[2] flex items-center justify-between gap-3 px-2">
-        <div className="flex items-center">
-          <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
-        </div>
+        <Link href="/" className="flex min-w-0 items-center justify-center gap-3 sm:justify-start">
+          <WorkspaceMark />
+          <div className="hidden min-w-0 sm:block">
+            <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-white">ShadowBook</p>
+            <p className="text-[10px] text-[#8f7f71]">Private execution</p>
+          </div>
+        </Link>
         {onClose ? (
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white sm:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white min-[420px]:hidden"
             aria-label="Close navigation"
           >
             <CloseIcon />
@@ -240,25 +245,30 @@ function SidebarContent({ activeSection, onChange, onClose }) {
                 onChange(item.key);
                 if (onClose) onClose();
               }}
-              className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 ${
+              className={`flex w-full items-center justify-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200 sm:justify-start sm:px-3.5 ${
                 active
                   ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.07] text-white'
                   : 'border-transparent text-[#9f9387] hover:border-white/8 hover:bg-[#12100e] hover:text-white'
               }`}
             >
-              <span className={`h-8 w-0.5 rounded-full ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
+              <span className={`hidden h-8 w-0.5 rounded-full sm:block ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
               <NavIcon name={item.icon} active={active} />
-              <span className="text-sm font-medium">{item.title}</span>
+              <span className="hidden text-sm font-medium sm:block">{item.title}</span>
             </button>
           );
         })}
       </nav>
 
-      <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-4 py-4">
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71]">
+      <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-3 py-3 sm:px-4 sm:py-4">
+        <div className="flex items-center justify-center sm:hidden">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-medium text-[#d4cbc2]">
+            {compactRailStatus}
+          </span>
+        </div>
+        <p className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71] sm:block">
           Status
         </p>
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 hidden space-y-2 sm:block">
           <p className="text-sm text-white">
             {isConnected ? 'Wallet connected' : 'Wallet not connected'}
           </p>
@@ -269,7 +279,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
             {isConnected ? networkLabel(chainId) : 'Sepolia / Arbitrum Sepolia'}
           </p>
         </div>
-        <div className="mt-4 border-t border-white/8 pt-3 text-[11px] text-[#6f6a64]">
+        <div className="mt-4 hidden border-t border-white/8 pt-3 text-[11px] text-[#6f6a64] sm:block">
           ShadowBook v1.0
         </div>
       </div>
@@ -279,7 +289,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] sm:flex sm:flex-col">
+    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[88px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] min-[420px]:flex min-[420px]:flex-col sm:w-[252px]">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -292,7 +302,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-[44] bg-black/60 sm:hidden"
+            className="fixed inset-0 z-[44] bg-black/60 min-[420px]:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -301,7 +311,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
             aria-label="Close navigation overlay"
           />
           <motion.aside
-            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] sm:hidden"
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] min-[420px]:hidden"
             initial={{ x: -24, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -24, opacity: 0 }}
@@ -317,7 +327,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
 
 function MobileNav({ activeSection, onChange }) {
   return (
-    <div className="mb-6 flex w-full gap-2 overflow-x-auto pb-1 pt-1 sm:hidden">
+    <div className="mb-6 flex w-full gap-2 overflow-x-auto pb-1 pt-1 min-[420px]:hidden">
       {NAV_ITEMS.map((item) => {
         const active = activeSection === item.key;
         return (
@@ -860,7 +870,7 @@ function Dashboard() {
           onClose={() => setMobileSidebarOpen(false)}
         />
 
-        <div className="min-w-0 w-full sm:pl-[252px]">
+        <div className="min-w-0 w-full min-[420px]:pl-[88px] sm:pl-[252px]">
           <div className="sb-app-container relative z-[2] py-5 lg:py-7">
               <AppTopNavbar onOpenMenu={() => setMobileSidebarOpen(true)} />
               <DashboardHeader
