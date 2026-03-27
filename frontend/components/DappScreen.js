@@ -146,7 +146,7 @@ function CloseIcon() {
 
 function MobileAppBar({ onOpenMenu }) {
   return (
-    <div className="sticky top-3 z-[35] mb-5 md:hidden">
+    <div className="sticky top-3 z-[35] mb-5 lg:hidden">
       <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
@@ -184,7 +184,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white lg:hidden"
             aria-label="Close navigation"
           >
             <CloseIcon />
@@ -242,7 +242,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[256px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
+    <aside className="fixed inset-y-0 left-0 top-0 z-[40] hidden h-screen w-[260px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] lg:flex lg:flex-col">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -255,7 +255,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-[44] bg-black/60 md:hidden"
+            className="fixed inset-0 z-[44] bg-black/60 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -264,7 +264,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
             aria-label="Close navigation overlay"
           />
           <motion.aside
-            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] md:hidden"
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] lg:hidden"
             initial={{ x: -24, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -24, opacity: 0 }}
@@ -759,7 +759,7 @@ function Dashboard() {
   ]);
 
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-[#050505]">
+    <div className="relative min-h-screen overflow-x-clip bg-[#050505] text-white">
       <motion.div
         className="pointer-events-none absolute left-[-10%] top-[4%] h-[360px] w-[360px] rounded-full bg-[#ff8a3c]/[0.11] blur-[140px]"
         animate={{ opacity: [0.44, 0.66, 0.44], scale: [1, 1.08, 1], x: [0, 18, 0], y: [0, -10, 0] }}
@@ -790,38 +790,36 @@ function Dashboard() {
       <div className="sb-grid-bg" />
       <div className="sb-noise opacity-[0.03]" />
 
-      <div className="sb-app-frame flex min-h-screen w-full">
-        <AppSidebar activeSection={activeSection} onChange={setActiveSection} />
-        <MobileSidebarDrawer
-          open={mobileSidebarOpen}
-          activeSection={activeSection}
-          onChange={setActiveSection}
-          onClose={() => setMobileSidebarOpen(false)}
-        />
+      <AppSidebar activeSection={activeSection} onChange={setActiveSection} />
+      <MobileSidebarDrawer
+        open={mobileSidebarOpen}
+        activeSection={activeSection}
+        onChange={setActiveSection}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
 
-        <div className="min-w-0 w-full md:pl-[256px]">
-          <div className="sb-app-container relative z-[2] py-5 lg:py-7">
-              <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
-              <DashboardHeader
-                activeSection={activeSection}
-                institutionMode={institutionMode}
-                onConnectWallet={handleOpenWallet}
-              />
+      <main className="min-h-screen w-full lg:ml-[260px] lg:w-[calc(100%-260px)]">
+        <div className="relative z-[2] min-h-screen px-4 py-5 md:px-6 md:py-6 xl:px-8 xl:py-7">
+          <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
+          <DashboardHeader
+            activeSection={activeSection}
+            institutionMode={institutionMode}
+            onConnectWallet={handleOpenWallet}
+          />
 
-              <div className="pb-14">
-                <motion.div
-                  key={activeSection}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  {sectionContent}
-                </motion.div>
-              </div>
+          <div className="pb-14">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              {sectionContent}
+            </motion.div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
 

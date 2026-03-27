@@ -24,14 +24,6 @@
     @apply mx-auto w-full max-w-[1200px] px-4 md:px-6;
   }
 
-  .sb-app-frame {
-    @apply w-full;
-  }
-
-  .sb-app-container {
-    @apply mx-auto w-full max-w-[1520px] px-4 md:px-7 xl:px-9;
-  }
-
   .sb-glass {
     @apply rounded-2xl border backdrop-blur-sb shadow-sbPanel;
     border-color: rgba(255, 255, 255, 0.08);
