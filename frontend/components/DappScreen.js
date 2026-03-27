@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAccount, useChainId } from 'wagmi';
 import { arbitrumSepolia, sepolia } from 'wagmi/chains';
 
@@ -128,6 +128,22 @@ function WorkspaceMetaPill({ label, value, mono = false }) {
   );
 }
 
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden>
+      <path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden>
+      <path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function AppTopLink({ href, children, external = false }) {
   const className =
     'inline-flex h-9 items-center rounded-full px-3 text-sm text-[#b8aea3] transition-colors duration-200 hover:text-white';
@@ -147,7 +163,7 @@ function AppTopLink({ href, children, external = false }) {
   );
 }
 
-function AppTopNavbar() {
+function AppTopNavbar({ onOpenMenu }) {
   return (
     <div className="sticky top-3 z-[35] mb-5">
       <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px] md:px-5">
@@ -164,6 +180,14 @@ function AppTopNavbar() {
           </div>
 
           <nav className="flex flex-wrap items-center gap-1">
+            <button
+              type="button"
+              onClick={onOpenMenu}
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
+            >
+              <MenuIcon />
+              Menu
+            </button>
             <AppTopLink href="/">Home</AppTopLink>
             <AppTopLink href="https://github.com/himanshukaushik9813/ShadowBook" external>
               Docs
@@ -178,65 +202,116 @@ function AppTopNavbar() {
   );
 }
 
-function AppSidebar({ activeSection, onChange }) {
+function SidebarContent({ activeSection, onChange, onClose }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
-      <div className="relative flex h-full flex-col overflow-hidden px-4 py-5">
-        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/18 to-transparent" />
-        <div className="absolute left-[-40px] top-16 h-28 w-28 rounded-full bg-[#ff8a3c]/[0.05] blur-[72px]" />
-        <div className="absolute bottom-10 right-[-54px] h-32 w-32 rounded-full bg-[#f59e0b]/[0.04] blur-[84px]" />
-        <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+    <div className="relative flex h-full flex-col overflow-hidden px-4 py-5">
+      <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/18 to-transparent" />
+      <div className="absolute left-[-40px] top-16 h-28 w-28 rounded-full bg-[#ff8a3c]/[0.05] blur-[72px]" />
+      <div className="absolute bottom-10 right-[-54px] h-32 w-32 rounded-full bg-[#f59e0b]/[0.04] blur-[84px]" />
+      <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
-        <div className="relative z-[2] flex items-center px-2">
+      <div className="relative z-[2] flex items-center justify-between gap-3 px-2">
+        <div className="flex items-center">
           <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
         </div>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
+            aria-label="Close navigation"
+          >
+            <CloseIcon />
+          </button>
+        ) : null}
+      </div>
 
-        <nav className="relative z-[2] mt-8 space-y-1.5">
-          {NAV_ITEMS.map((item) => {
-            const active = activeSection === item.key;
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => onChange(item.key)}
-                className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 ${
-                  active
-                    ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.07] text-white'
-                    : 'border-transparent text-[#9f9387] hover:border-white/8 hover:bg-[#12100e] hover:text-white'
-                }`}
-              >
-                <span className={`h-8 w-0.5 rounded-full ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
-                <NavIcon name={item.icon} active={active} />
-                <span className="text-sm font-medium">{item.title}</span>
-              </button>
-            );
-          })}
-        </nav>
+      <nav className="relative z-[2] mt-8 space-y-1.5">
+        {NAV_ITEMS.map((item) => {
+          const active = activeSection === item.key;
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => {
+                onChange(item.key);
+                if (onClose) onClose();
+              }}
+              className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 ${
+                active
+                  ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.07] text-white'
+                  : 'border-transparent text-[#9f9387] hover:border-white/8 hover:bg-[#12100e] hover:text-white'
+              }`}
+            >
+              <span className={`h-8 w-0.5 rounded-full ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
+              <NavIcon name={item.icon} active={active} />
+              <span className="text-sm font-medium">{item.title}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-        <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-4 py-4">
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71]">
-            Status
+      <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-4 py-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71]">
+          Status
+        </p>
+        <div className="mt-3 space-y-2">
+          <p className="text-sm text-white">
+            {isConnected ? 'Wallet connected' : 'Wallet not connected'}
           </p>
-          <div className="mt-3 space-y-2">
-            <p className="text-sm text-white">
-              {isConnected ? 'Wallet connected' : 'Wallet not connected'}
-            </p>
-            <p className="font-mono text-xs text-[#8e877e]">
-              {isConnected ? shorten(address) : 'Awaiting session'}
-            </p>
-            <p className="text-xs text-[#8e877e]">
-              {isConnected ? networkLabel(chainId) : 'Sepolia / Arbitrum Sepolia'}
-            </p>
-          </div>
-          <div className="mt-4 border-t border-white/8 pt-3 text-[11px] text-[#6f6a64]">
-            ShadowBook v1.0
-          </div>
+          <p className="font-mono text-xs text-[#8e877e]">
+            {isConnected ? shorten(address) : 'Awaiting session'}
+          </p>
+          <p className="text-xs text-[#8e877e]">
+            {isConnected ? networkLabel(chainId) : 'Sepolia / Arbitrum Sepolia'}
+          </p>
+        </div>
+        <div className="mt-4 border-t border-white/8 pt-3 text-[11px] text-[#6f6a64]">
+          ShadowBook v1.0
         </div>
       </div>
+    </div>
+  );
+}
+
+function AppSidebar({ activeSection, onChange }) {
+  return (
+    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
+      <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
+  );
+}
+
+function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
+  return (
+    <AnimatePresence>
+      {open ? (
+        <>
+          <motion.button
+            type="button"
+            className="fixed inset-0 z-[44] bg-black/60 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={onClose}
+            aria-label="Close navigation overlay"
+          />
+          <motion.aside
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] md:hidden"
+            initial={{ x: -24, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -24, opacity: 0 }}
+            transition={{ duration: 0.24 }}
+          >
+            <SidebarContent activeSection={activeSection} onChange={onChange} onClose={onClose} />
+          </motion.aside>
+        </>
+      ) : null}
+    </AnimatePresence>
   );
 }
 
@@ -613,6 +688,7 @@ function Dashboard() {
     'System ready. Waiting for encrypted orderflow.'
   );
   const [activeSection, setActiveSection] = useState('trade');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [systemLogs, setSystemLogs] = useState([
     {
       timestamp: Date.now(),
@@ -653,6 +729,7 @@ function Dashboard() {
 
   function handleOpenWallet() {
     setActiveSection('trade');
+    setMobileSidebarOpen(false);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.setTimeout(() => {
@@ -683,6 +760,21 @@ function Dashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = previousOverflow || '';
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileSidebarOpen]);
 
   const sectionContent = useMemo(() => {
     if (activeSection === 'proofs') {
@@ -761,10 +853,16 @@ function Dashboard() {
 
       <div className="sb-app-frame flex min-h-screen w-full">
         <AppSidebar activeSection={activeSection} onChange={setActiveSection} />
+        <MobileSidebarDrawer
+          open={mobileSidebarOpen}
+          activeSection={activeSection}
+          onChange={setActiveSection}
+          onClose={() => setMobileSidebarOpen(false)}
+        />
 
         <div className="min-w-0 w-full md:pl-[252px]">
           <div className="sb-app-container relative z-[2] py-5 lg:py-7">
-              <AppTopNavbar />
+              <AppTopNavbar onOpenMenu={() => setMobileSidebarOpen(true)} />
               <DashboardHeader
                 activeSection={activeSection}
                 institutionMode={institutionMode}
