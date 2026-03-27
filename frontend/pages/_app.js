@@ -9,6 +9,7 @@ import '../styles/tailwind.css';
 const queryClient = new QueryClient();
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shadow-book-black.vercel.app';
 
 const connectors = [injected()];
 
@@ -20,7 +21,7 @@ if (walletConnectProjectId) {
       metadata: {
         name: 'ShadowBook',
         description: 'Encrypted Orderflow Layer powered by CoFHE',
-        url: 'https://shadowbook.local',
+        url: appUrl,
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
       },
     })

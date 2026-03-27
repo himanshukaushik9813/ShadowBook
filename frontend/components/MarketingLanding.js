@@ -48,21 +48,6 @@ const TIMELINE_STEPS = [
   },
 ];
 
-const JOURNEY_STEPS = [
-  {
-    title: 'Connect Wallet',
-    detail: 'Start a private session with a supported wallet and move directly into the execution surface.',
-  },
-  {
-    title: 'Submit Private Order',
-    detail: 'Encrypt the order locally and send it through ShadowBook without leaking intent.',
-  },
-  {
-    title: 'Verify Settlement',
-    detail: 'Review the completed execution with a proof-backed record after settlement finalizes.',
-  },
-];
-
 const VALUE_ITEMS = [
   {
     title: 'Hidden Intent',
@@ -323,10 +308,10 @@ function HeroBackdrop({ styleGrid, styleGlowA, styleGlowB, styleVisual }) {
   );
 }
 
-function VisualNode({ title, subtitle, active = false, className = '' }) {
+function VisualNode({ index, title, helper, active = false, className = '' }) {
   return (
     <motion.div
-      className={`absolute rounded-2xl border px-4 py-3 backdrop-blur-xl ${className} ${
+      className={`absolute rounded-[22px] border px-4 py-3 backdrop-blur-xl ${className} ${
         active
           ? 'border-[#ffb36b]/20 bg-[#ff8a3c]/[0.08]'
           : 'border-white/10 bg-white/[0.03]'
@@ -347,127 +332,126 @@ function VisualNode({ title, subtitle, active = false, className = '' }) {
       }}
       transition={{ duration: active ? 6.2 : 7.2, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <p className="text-[11px] font-medium text-slate-500">{title}</p>
-      <p className="mt-1 text-sm text-slate-100">{subtitle}</p>
+      <div className="flex items-start justify-between gap-3">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-black/20 font-mono text-[11px] text-[#ffe0c2]">
+          0{index}
+        </span>
+        <p className="text-right text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">
+          {helper}
+        </p>
+      </div>
+      <p className="mt-3 text-sm font-medium leading-snug text-slate-100">{title}</p>
     </motion.div>
   );
 }
 
 function HeroVisual() {
+  const flowNodes = [
+    { title: 'Intent captured', helper: 'Input' },
+    { title: 'Payload sealed', helper: 'Encrypt' },
+    { title: 'Execution path hidden', helper: 'Route' },
+    { title: 'Settlement confirmed', helper: 'Proof' },
+  ];
+
   return (
-    <div className="relative mx-auto flex h-[320px] w-full max-w-[360px] items-center justify-center sm:h-[380px] sm:max-w-[430px] md:h-[440px] md:max-w-[560px]">
-      <div className="relative h-[440px] w-[560px] origin-center scale-[0.56] sm:scale-[0.72] md:scale-100">
-      <motion.div
-        className="absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-        animate={{ opacity: [0.18, 0.28, 0.18], scale: [0.98, 1.02, 0.98] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        style={{
-          background:
-            'radial-gradient(circle, rgba(255,138,60,0.14) 0%, rgba(255,138,60,0.04) 38%, rgba(0,0,0,0) 70%)',
-          filter: 'blur(60px)',
-        }}
-      />
-      <div className="absolute inset-0 rounded-[32px] border border-white/10 bg-[rgba(16,12,10,0.68)] backdrop-blur-2xl" />
-      <div className="absolute inset-6 rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,245,236,0.045),rgba(255,255,255,0.018))]" />
-      <motion.div
-        className="absolute left-10 right-10 top-0 h-px"
-        animate={{ opacity: [0.18, 0.34, 0.18] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        style={{
-          background:
-            'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,214,176,0.42), rgba(255,255,255,0))',
-        }}
-      />
+    <div className="relative mx-auto flex h-[360px] w-full max-w-[380px] items-center justify-center sm:h-[410px] sm:max-w-[470px] md:h-[450px] md:max-w-[540px]">
+      <div className="relative h-[450px] w-[540px] origin-center scale-[0.64] sm:scale-[0.78] md:scale-100">
+        <div className="absolute inset-0 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,12,10,0.8),rgba(10,8,7,0.84))] shadow-[0_24px_68px_rgba(0,0,0,0.32)] backdrop-blur-2xl" />
+        <div className="absolute inset-5 rounded-[26px] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.09),transparent_28%),rgba(9,7,6,0.76)]" />
+        <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffcf9a]/30 to-transparent" />
 
-      <div className="absolute inset-0">
-        <svg className="h-full w-full" viewBox="0 0 560 440" fill="none" aria-hidden>
-          <defs>
-            <linearGradient id="routeLine" x1="112" y1="126" x2="442" y2="286">
-              <stop offset="0%" stopColor="rgba(255,179,107,0.08)" />
-              <stop offset="45%" stopColor="rgba(255,179,107,0.3)" />
-              <stop offset="100%" stopColor="rgba(245,158,11,0.18)" />
-            </linearGradient>
-            <linearGradient id="auxRouteLine" x1="430" y1="118" x2="286" y2="198">
-              <stop offset="0%" stopColor="rgba(255,214,176,0.14)" />
-              <stop offset="100%" stopColor="rgba(255,179,107,0.06)" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M118 126C176 126 212 164 248 194C296 232 352 242 438 286"
-            stroke="url(#routeLine)"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M428 118C390 130 350 152 314 188"
-            stroke="url(#auxRouteLine)"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          />
-          <path
-            d="M130 284C180 276 216 248 254 220"
-            stroke="rgba(163,132,106,0.22)"
-            strokeWidth="1.5"
-            strokeDasharray="4 8"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
-      <motion.div
-        className="absolute left-[118px] top-[126px] h-2.5 w-2.5 rounded-full bg-[#ffb36b]"
-        animate={{ x: [0, 136, 320], y: [0, 70, 160], opacity: [0, 1, 1, 0] }}
-        transition={{ duration: 5.8, repeat: Infinity, ease: LUXURY_EASE }}
-      />
-      <motion.div
-        className="absolute left-[428px] top-[118px] h-2 w-2 rounded-full bg-[#f6c08d]"
-        animate={{ x: [0, -58, -118], y: [0, 28, 70], opacity: [0, 1, 1, 0] }}
-        transition={{ duration: 5.2, repeat: Infinity, ease: LUXURY_EASE, delay: 0.9 }}
-      />
-
-      <VisualNode title="Intent" subtitle="Order captured" className="left-10 top-14 w-40" />
-      <VisualNode title="Encryption" subtitle="Payload sealed" active className="right-10 top-12 w-44" />
-      <VisualNode title="Private route" subtitle="Execution path hidden" className="left-10 bottom-[88px] w-44" />
-      <VisualNode title="Proof" subtitle="Settlement confirmed" className="right-10 bottom-[88px] w-44" />
-
-      <motion.div
-        className="absolute left-1/2 top-[47%] h-[120px] w-[120px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffb36b]/10"
-        animate={{ scale: [1, 1.05, 1], opacity: [0.28, 0.44, 0.28] }}
-        transition={{ duration: 7.4, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute left-1/2 top-[47%] h-[92px] w-[92px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-xl"
-        animate={{
-          scale: [1, 1.035, 1],
-          boxShadow: [
-            '0 0 0 rgba(0,0,0,0)',
-            '0 0 24px rgba(255,138,60,0.08)',
-            '0 0 0 rgba(0,0,0,0)',
-          ],
-        }}
-        transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <div className="flex h-full items-center justify-center">
-          <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">ShadowBook</p>
-            <p className="mt-1.5 text-[13px] text-slate-100">Private execution</p>
+        <div className="absolute left-7 right-7 top-7 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#9f8b78]">
+              Private execution system
+            </p>
+            <p className="mt-1 text-sm font-medium text-white">Intent to settlement</p>
           </div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] px-3 py-1.5 text-[11px] text-[#ffe0c2]">
+            <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
+            Hidden path
+          </span>
         </div>
-      </motion.div>
 
-      <div className="absolute bottom-10 left-8 right-8 hidden gap-4 md:grid md:grid-cols-3">
-        {['intent.hidden()', 'route.secure()', 'proof.finalized()'].map((line, index) => (
+        <div className="absolute left-7 right-7 top-[86px] bottom-[70px] overflow-hidden rounded-[26px] border border-white/8 bg-[rgba(8,7,6,0.52)]">
+          <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(rgba(167,118,76,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.12) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/20 to-transparent" />
+          <div className="absolute left-8 top-8 h-24 w-24 rounded-full bg-[#ff8a3c]/[0.06] blur-[76px]" />
+          <div className="absolute right-10 bottom-8 h-24 w-24 rounded-full bg-[#f59e0b]/[0.05] blur-[78px]" />
+
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 486 292" fill="none" aria-hidden>
+            <defs>
+              <linearGradient id="heroWorkflowLine" x1="92" y1="60" x2="394" y2="232">
+                <stop offset="0%" stopColor="rgba(255,179,107,0.18)" />
+                <stop offset="50%" stopColor="rgba(255,179,107,0.56)" />
+                <stop offset="100%" stopColor="rgba(245,158,11,0.24)" />
+              </linearGradient>
+            </defs>
+            <path d="M122 74V220" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M177 220C201 220 209 192 243 146" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M301 146C334 146 349 102 364 74" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
+            <path d="M364 74V220" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
+            <circle cx="122" cy="74" r="5" fill="#ffcf9a" fillOpacity="0.9" />
+            <circle cx="122" cy="220" r="5" fill="#ffb36b" fillOpacity="0.9" />
+            <circle cx="243" cy="146" r="5" fill="#ffb36b" fillOpacity="0.9" />
+            <circle cx="364" cy="74" r="5" fill="#ffcf9a" fillOpacity="0.9" />
+            <circle cx="364" cy="220" r="5" fill="#ffb36b" fillOpacity="0.9" />
+          </svg>
+
           <motion.div
-            key={line}
-            className="rounded-xl border border-white/10 bg-black/20 px-3.5 py-2.5 font-mono text-[11px] text-slate-300"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 + index * 0.14, ease: LUXURY_EASE }}
+            className="absolute left-[119px] top-[67px] h-3 w-3 rounded-full bg-[#ffb36b]"
+            animate={{ x: [0, 0, 121, 242, 242], y: [0, 146, 146, 0, 146], opacity: [0.15, 1, 1, 1, 0.2] }}
+            transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ boxShadow: '0 0 18px rgba(255,138,60,0.34)' }}
+          />
+
+          <div className="absolute left-[28px] top-[22px] w-[168px]">
+            <VisualNode index={1} title={flowNodes[0].title} helper={flowNodes[0].helper} className="relative w-full" />
+          </div>
+          <div className="absolute left-[28px] bottom-[22px] w-[168px]">
+            <VisualNode index={2} title={flowNodes[1].title} helper={flowNodes[1].helper} className="relative w-full" />
+          </div>
+          <div className="absolute right-[28px] top-[22px] w-[168px]">
+            <VisualNode index={3} title={flowNodes[2].title} helper={flowNodes[2].helper} active className="relative w-full" />
+          </div>
+          <div className="absolute right-[28px] bottom-[22px] w-[168px]">
+            <VisualNode index={4} title={flowNodes[3].title} helper={flowNodes[3].helper} className="relative w-full" />
+          </div>
+
+          <motion.div
+            className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffb36b]/14"
+            animate={{ scale: [1, 1.05, 1], opacity: [0.24, 0.48, 0.24] }}
+            transition={{ duration: 5.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute left-1/2 top-1/2 flex h-[118px] w-[118px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#ffb36b]/18 bg-[linear-gradient(180deg,rgba(255,138,60,0.14),rgba(180,83,9,0.05))] shadow-[0_20px_52px_rgba(255,138,60,0.14)]"
+            animate={{
+              boxShadow: [
+                '0 16px 42px rgba(255,138,60,0.12)',
+                '0 24px 56px rgba(255,138,60,0.2)',
+                '0 16px 42px rgba(255,138,60,0.12)',
+              ],
+            }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
           >
-            {line}
+            <div className="rounded-full border border-white/10 bg-[rgba(10,8,7,0.84)] px-4 py-3 text-center">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#9f8b78]">ShadowBook</p>
+              <p className="mt-1 text-[13px] font-medium text-[#ffe0c2]">Private execution</p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.1em] text-slate-500">sealed routing core</p>
+            </div>
           </motion.div>
-        ))}
-      </div>
+        </div>
+
+        <div className="absolute bottom-6 left-6 right-6 grid grid-cols-4 gap-2">
+          {flowNodes.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-xl border border-white/10 bg-black/20 px-2.5 py-2 text-center"
+            >
+              <p className="text-[10px] uppercase tracking-[0.12em] text-slate-500">{item.helper}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="absolute bottom-4 left-4 right-4 md:hidden">
@@ -480,9 +464,7 @@ function HeroVisual() {
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
             Private flow
           </p>
-          <p className="mt-2 font-mono text-[11px] text-slate-300">
-            intent.hidden() → route.secure() → proof.finalized()
-          </p>
+          <p className="mt-2 font-mono text-[11px] text-slate-300">intent → sealed → hidden path → settled</p>
         </motion.div>
       </div>
     </div>
@@ -747,30 +729,30 @@ function TrustCard({ item, index }) {
 
 function TrustStrip() {
   return (
-    <section id="features" className="relative px-4 py-12 md:px-6 md:py-14">
+    <section id="features" className="relative px-4 py-8 md:px-6 md:py-10">
       <div className="pointer-events-none absolute left-[8%] top-6 hidden h-48 w-48 rounded-full bg-[#ff8a3c]/[0.08] blur-[90px] md:block" />
       <div className="pointer-events-none absolute bottom-0 right-[10%] hidden h-48 w-48 rounded-full bg-[#f59e0b]/[0.06] blur-[100px] md:block" />
 
       <div className="sb-container relative z-[2]">
         <SectionBridge />
-        <SectionReveal className="mt-10 overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl md:p-8">
+        <SectionReveal className="mt-6 overflow-hidden rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-5 shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl md:p-6">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.05),transparent_28%),radial-gradient(circle_at_82%_70%,rgba(255,138,60,0.1),transparent_24%)]" />
           <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
 
-          <div className="relative z-[2] flex flex-col gap-5 border-b border-white/8 pb-6 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl">
+          <div className="relative z-[2] grid gap-3 border-b border-white/8 pb-4 md:pb-5 lg:grid-cols-[minmax(0,1.12fr)_auto] lg:items-end">
+            <div className="max-w-[680px]">
               <p className="sb-eyebrow">Core features</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold tracking-[-0.04em] text-white md:text-4xl">
+              <h2 className="mt-2.5 font-display text-[1.95rem] font-semibold leading-[1.08] tracking-[-0.04em] text-white md:text-[2.35rem]">
                 Built to hide intent from entry to settlement
               </h2>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300">
               <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
               Premium execution stack
             </div>
           </div>
 
-          <div className="relative z-[2] mt-6 grid gap-4 md:grid-cols-3">
+          <div className="relative z-[2] mt-4 grid gap-3 md:grid-cols-3">
             {TRUST_ITEMS.map((item, index) => (
               <TrustCard key={item.label} item={item} index={index} />
             ))}
@@ -783,7 +765,7 @@ function TrustStrip() {
 
 function InfraTrustStrip() {
   return (
-    <section className="relative px-4 py-4 md:px-6">
+    <section className="relative px-4 py-3 md:px-6">
       <div className="sb-container">
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-full border border-white/8 bg-white/[0.02] px-5 py-3 text-[11px] tracking-[0.12em] text-slate-500 backdrop-blur-xl">
           {TRUST_LABELS.map((item, index) => (
@@ -798,144 +780,9 @@ function InfraTrustStrip() {
   );
 }
 
-function SecurityBannerSection() {
-  return (
-    <section id="security" className="relative px-4 py-20 md:px-6">
-      <div className="pointer-events-none absolute left-[8%] top-14 hidden h-56 w-56 rounded-full bg-[#ff8a3c]/[0.08] blur-[110px] md:block" />
-      <div className="pointer-events-none absolute right-[6%] top-10 hidden h-52 w-52 rounded-full bg-[#f59e0b]/[0.06] blur-[110px] md:block" />
-
-      <div className="sb-container">
-        <SectionReveal className="relative overflow-hidden rounded-[38px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.9),rgba(10,8,7,0.84))] p-7 shadow-[0_24px_76px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:p-9">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(255,255,255,0.05),transparent_22%),radial-gradient(circle_at_82%_72%,rgba(255,138,60,0.12),transparent_24%)]" />
-          <div className="absolute inset-y-0 left-[-8%] w-[18%] bg-[linear-gradient(90deg,rgba(255,138,60,0.12),rgba(255,138,60,0))] blur-[70px]" />
-          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/28 to-transparent" />
-
-          <div className="relative z-[2] grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-            <div className="max-w-2xl">
-              <p className="sb-eyebrow">Security banner</p>
-              <h2 className="mt-3 font-display text-4xl font-semibold tracking-[-0.045em] text-white md:text-5xl">
-                Security that scales with you
-              </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400 md:text-base">
-                Private execution should feel industrial, not experimental. ShadowBook keeps intent sealed while preserving a clear verification path after settlement.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/app" className="inline-flex min-w-[180px] items-center justify-center rounded-2xl border border-[#ffb36b]/16 bg-[linear-gradient(180deg,rgba(255,154,84,0.96),rgba(226,117,46,0.96))] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_44px_rgba(255,138,60,0.16)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_22px_52px_rgba(255,138,60,0.22)]">
-                  Connect Wallet
-                </Link>
-                <MagneticLink
-                  href="#how-it-works"
-                  className="group relative inline-flex min-w-[170px] items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-medium text-slate-100 backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.05]"
-                >
-                  Learn More
-                </MagneticLink>
-              </div>
-            </div>
-
-            <div className="relative mx-auto flex h-[280px] w-full max-w-[420px] items-center justify-center">
-              <div className="absolute h-[220px] w-[220px] rounded-full bg-[#ff8a3c]/[0.1] blur-[80px]" />
-              <div className="absolute h-[210px] w-[210px] rounded-[36px] border border-[#ffb36b]/12 bg-[linear-gradient(180deg,rgba(20,16,13,0.82),rgba(11,9,8,0.8))]" style={{ transform: 'rotate(12deg)' }} />
-              <div className="absolute h-[210px] w-[210px] rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.86),rgba(10,8,7,0.82))]" />
-              <div className="relative flex h-36 w-36 items-center justify-center rounded-[30px] border border-[#ffb36b]/16 bg-[linear-gradient(180deg,rgba(255,138,60,0.1),rgba(255,138,60,0.02))] shadow-[0_20px_50px_rgba(255,138,60,0.12)]">
-                <svg viewBox="0 0 64 64" className="h-16 w-16" fill="none" aria-hidden>
-                  <path
-                    d="M32 8l16 7v11c0 13-7.2 24.4-16 30-8.8-5.6-16-17-16-30V15l16-7z"
-                    stroke="#ffcf9a"
-                    strokeWidth="2.4"
-                  />
-                  <path d="M24.5 32l5 5 10-11" stroke="#ffb36b" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </SectionReveal>
-      </div>
-    </section>
-  );
-}
-
-function JourneySection() {
-  return (
-    <section className="relative overflow-hidden px-4 py-28 md:px-6">
-      <motion.div
-        className="pointer-events-none absolute left-[8%] top-[10%] h-[18rem] w-[18rem] rounded-full bg-[#ff8a3c]/[0.08] blur-[120px]"
-        animate={{ opacity: [0.38, 0.56, 0.38], x: [0, 18, 0], y: [0, -10, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="pointer-events-none absolute right-[6%] top-[36%] h-[22rem] w-[22rem] rounded-full bg-[#f59e0b]/[0.06] blur-[130px]"
-        animate={{ opacity: [0.28, 0.46, 0.28], x: [0, -22, 0], y: [0, 16, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-      />
-      <motion.div
-        className="pointer-events-none absolute left-[28%] top-[54%] h-[15rem] w-[22rem] rounded-[999px] bg-[linear-gradient(90deg,rgba(255,138,60,0.08),rgba(255,138,60,0))] blur-[80px]"
-        animate={{ opacity: [0.2, 0.34, 0.2], x: [0, 24, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            'linear-gradient(180deg, rgba(255,179,107,0.12) 0, rgba(255,179,107,0.12) 1px, transparent 1px, transparent 18px)',
-          backgroundSize: '100% 18px',
-          maskImage: 'linear-gradient(180deg, transparent, black 14%, black 86%, transparent)',
-        }}
-      />
-      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_160px_rgba(0,0,0,0.46)]" />
-
-      <div className="sb-container relative">
-        <SectionReveal className="relative overflow-hidden rounded-[40px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.84))] px-6 py-10 shadow-[0_28px_84px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:px-10 md:py-12">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,138,60,0.11),transparent_24%),radial-gradient(circle_at_12%_78%,rgba(245,158,11,0.06),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_20%)]" />
-          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/28 to-transparent" />
-          <div className="absolute left-[18%] top-[22%] h-40 w-40 rounded-full bg-[#ff8a3c]/[0.05] blur-[90px]" />
-
-          <div className="relative z-[2] text-center">
-            <p className="sb-eyebrow text-[#9a8773]">Journey</p>
-            <h2 className="mt-4 font-display text-4xl font-semibold tracking-[-0.05em] text-white md:text-5xl lg:text-[3.35rem]">
-              Your ShadowBook Journey
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
-              From order submission to proof-backed settlement in three simple steps.
-            </p>
-          </div>
-
-          <div className="relative z-[2] mt-14 grid gap-7 lg:grid-cols-3">
-            {JOURNEY_STEPS.map((item, index) => (
-              <motion.div
-                key={item.title}
-                className="group relative overflow-hidden border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.94),rgba(10,8,7,0.86))] px-8 py-8 shadow-[0_20px_54px_rgba(0,0,0,0.22)]"
-                style={{ clipPath: 'polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%)' }}
-                whileHover={{
-                  y: -6,
-                  boxShadow: '0 30px 72px rgba(255,138,60,0.14)',
-                  borderColor: 'rgba(255,179,107,0.18)',
-                }}
-                transition={{ duration: 0.35, ease: LUXURY_EASE }}
-              >
-                <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/30 to-transparent" />
-                <div className="absolute inset-x-8 top-3 h-8 rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))] blur-xl" />
-                <div className="absolute right-4 top-5 h-20 w-20 rounded-full bg-[#ff8a3c]/[0.06] blur-3xl transition duration-300 group-hover:bg-[#ff8a3c]/[0.11]" />
-                <div className="absolute bottom-2 left-8 right-8 h-10 rounded-full bg-[#ff8a3c]/[0.04] blur-2xl opacity-0 transition duration-300 group-hover:opacity-100" />
-
-                <div className="relative">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#ffb36b]/18 bg-[linear-gradient(180deg,rgba(255,138,60,0.14),rgba(180,83,9,0.06))] font-mono text-sm text-[#ffe0c2] shadow-[0_10px_24px_rgba(255,138,60,0.08)]">
-                    0{index + 1}
-                  </span>
-                  <h3 className="mt-7 text-[1.35rem] font-semibold tracking-[-0.02em] text-white">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-400">{item.detail}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </SectionReveal>
-      </div>
-    </section>
-  );
-}
-
 function ValueDeliverySection() {
   return (
-    <section className="relative overflow-hidden px-4 py-24 md:px-6">
+    <section className="relative overflow-hidden px-4 py-20 md:px-6">
       <motion.div
         className="pointer-events-none absolute left-[10%] top-10 hidden h-48 w-48 rounded-full bg-[#ff8a3c]/[0.07] blur-[100px] md:block"
         animate={{ opacity: [0.26, 0.42, 0.26], x: [0, 16, 0], y: [0, -8, 0] }}
@@ -1104,13 +951,13 @@ function HowItWorksVisualPanel() {
 
 function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="relative px-4 py-24 md:px-6">
+    <section id="how-it-works" className="relative px-4 py-20 md:px-6">
       <div className="pointer-events-none absolute left-[12%] top-20 hidden h-56 w-56 rounded-full bg-[#ff8a3c]/[0.06] blur-[100px] md:block" />
       <div className="pointer-events-none absolute bottom-20 right-[12%] hidden h-56 w-56 rounded-full bg-[#f59e0b]/[0.05] blur-[110px] md:block" />
 
       <div className="sb-container relative">
         <SectionBridge />
-        <SectionReveal className="mt-10 overflow-hidden rounded-[38px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-6 shadow-[0_24px_76px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-8">
+        <SectionReveal className="mt-8 overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-5 shadow-[0_24px_76px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-7">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_34%),radial-gradient(circle_at_18%_70%,rgba(255,138,60,0.1),transparent_24%),radial-gradient(circle_at_84%_24%,rgba(245,158,11,0.08),transparent_26%)]" />
           <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
 
@@ -1244,7 +1091,7 @@ function WowFactorSection() {
   }, []);
 
   return (
-    <section id="preview" className="relative px-4 py-24 md:px-6">
+    <section id="preview" className="relative px-4 py-20 md:px-6">
       <div className="pointer-events-none absolute left-[-10%] top-20 hidden h-72 w-72 rounded-full bg-[#ff8a3c]/10 blur-[110px] md:block" />
       <div className="pointer-events-none absolute bottom-10 right-[-8%] hidden h-80 w-80 rounded-full bg-[#f59e0b]/10 blur-[120px] md:block" />
 
@@ -1369,7 +1216,7 @@ function WowFactorSection() {
 
 function FinalCta() {
   return (
-    <section className="relative px-4 pb-24 pt-12 md:px-6">
+    <section className="relative px-4 pb-20 pt-10 md:px-6">
       <div className="sb-container">
         <motion.div
           className="relative overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-8 backdrop-blur-2xl md:p-10"
@@ -1427,9 +1274,7 @@ export default function MarketingLanding() {
         <HeroSection />
         <TrustStrip />
         <InfraTrustStrip />
-        <SecurityBannerSection />
         <HowItWorksSection />
-        <JourneySection />
         <ValueDeliverySection />
         <WowFactorSection />
         <FinalCta />

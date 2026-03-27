@@ -146,7 +146,7 @@ function CloseIcon() {
 
 function MobileAppBar({ onOpenMenu }) {
   return (
-    <div className="sticky top-3 z-[35] mb-5 lg:hidden">
+    <div className="sticky top-3 z-[35] mb-5 md:hidden">
       <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
@@ -161,6 +161,54 @@ function MobileAppBar({ onOpenMenu }) {
             <MenuIcon />
             Menu
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AppTopNavLink({ href, children }) {
+  const external = href.startsWith('http');
+  const classes =
+    'inline-flex items-center rounded-full border border-transparent px-3 py-2 text-sm text-[#b7aea5] transition-all duration-200 hover:border-white/8 hover:bg-white/[0.04] hover:text-white';
+
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className={classes}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={classes}>
+      {children}
+    </Link>
+  );
+}
+
+function AppTopNavbar() {
+  return (
+    <div className="sticky top-4 z-[34] mb-5 hidden md:block">
+      <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-5 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
+        <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
+
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-3 md:gap-4">
+            <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
+            <div className="hidden h-6 w-px bg-white/8 md:block" />
+            <nav className="flex flex-wrap items-center gap-1.5">
+              <AppTopNavLink href="/">Home</AppTopNavLink>
+              <AppTopNavLink href="https://github.com/himanshukaushik9813/ShadowBook">Docs</AppTopNavLink>
+              <AppTopNavLink href="https://github.com/himanshukaushik9813/ShadowBook">GitHub</AppTopNavLink>
+            </nav>
+          </div>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-[#8f7f71]">
+            <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
+            App workspace
+          </div>
         </div>
       </div>
     </div>
@@ -242,7 +290,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 z-40 h-screen w-[260px] flex-col border-r border-white/10 bg-[#070606] shadow-[20px_0_60px_rgba(0,0,0,0.28)]">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/10 bg-[#070606] shadow-[20px_0_60px_rgba(0,0,0,0.28)]">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -255,7 +303,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-[44] bg-black/60 lg:hidden"
+            className="fixed inset-0 z-[44] bg-black/60 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -264,7 +312,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
             aria-label="Close navigation overlay"
           />
           <motion.aside
-            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] lg:hidden"
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] md:hidden"
             initial={{ x: -24, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -24, opacity: 0 }}
@@ -285,8 +333,8 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
   const title = NAV_ITEMS.find((item) => item.key === activeSection)?.title || 'Trade';
 
   return (
-    <header className="mb-6">
-      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(20,16,14,0.94),rgba(11,9,8,0.92))] px-4 py-4 shadow-[0_22px_54px_rgba(0,0,0,0.28)] backdrop-blur-[14px] md:px-5 md:py-5">
+    <header className="mb-5 md:mb-6">
+      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(20,16,14,0.94),rgba(11,9,8,0.92))] px-4 py-4 shadow-[0_22px_54px_rgba(0,0,0,0.28)] backdrop-blur-[14px] md:px-6 md:py-5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_50%,rgba(255,138,60,0.1),transparent_24%),linear-gradient(120deg,rgba(255,255,255,0.025),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_24%)]" />
         <div
           className="absolute inset-0 opacity-[0.035]"
@@ -302,9 +350,9 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
         <div className="absolute right-16 top-1/2 hidden h-16 w-32 -translate-y-1/2 rounded-full bg-[#f59e0b]/[0.04] blur-[72px] xl:block" />
         <div className="absolute inset-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),inset_0_-30px_60px_rgba(0,0,0,0.16)]" />
 
-        <div className="relative flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <Link href="/" className="group min-w-0 transition-opacity hover:opacity-95 xl:flex-1">
-            <div className="inline-flex max-w-full items-center gap-4 rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+        <div className="relative grid gap-4 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-center">
+          <Link href="/" className="group min-w-0 transition-opacity hover:opacity-95">
+            <div className="inline-flex max-w-full items-center gap-4 rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:px-5">
               <WorkspaceMark />
               <div className="min-w-0">
                 <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#a99684]">
@@ -317,9 +365,9 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
             </div>
           </Link>
 
-          <div className="w-full max-w-full rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] xl:w-auto xl:min-w-[360px]">
-            <div className="flex flex-col gap-3 xl:items-end">
-              <div className="flex flex-wrap items-center gap-2.5 xl:justify-end">
+          <div className="w-full max-w-full rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] 2xl:min-w-[430px] 2xl:max-w-[620px] 2xl:justify-self-end">
+            <div className="flex flex-col gap-3 2xl:items-end">
+              <div className="flex flex-wrap items-center gap-2.5 2xl:justify-end">
                 <WorkspaceMetaPill
                   label="Contract"
                   value={
@@ -338,7 +386,7 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
                 ) : null}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 xl:justify-end">
+              <div className="flex flex-wrap items-center gap-2.5 2xl:justify-end">
                 {isConnected ? (
                   <button
                     type="button"
@@ -377,7 +425,7 @@ function StatusChecklist({ flowState }) {
   ];
 
   return (
-    <div className="grid gap-3 xl:grid-cols-4">
+    <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-4">
       {stages.map((stage) => {
         const status = flowState?.pipeline?.stages?.[stage.key]?.state || 'idle';
         const completed = status === 'completed';
@@ -421,12 +469,12 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
   const chainId = useChainId();
 
   return (
-    <section className="space-y-6">
-      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.84),rgba(11,9,8,0.8))] p-6 shadow-[0_20px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+    <section className="space-y-5 md:space-y-6">
+      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.84),rgba(11,9,8,0.8))] p-5 shadow-[0_20px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl md:p-6">
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
         <div className="absolute left-[-18px] top-8 h-20 w-20 rounded-full bg-[#ff8a3c]/[0.06] blur-[70px]" />
-        <div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-2xl">
+        <div className="relative grid gap-4 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
+          <div className="max-w-3xl">
             <p className="sb-eyebrow">Trade</p>
             <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white md:text-4xl">
               Private execution
@@ -436,7 +484,7 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex flex-wrap gap-2 text-xs 2xl:justify-end">
             <span className="sb-status-pill">
               Contract{' '}
               <span className="font-mono text-slate-300">
@@ -458,17 +506,16 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
 
       {isConnected ? (
         <>
-          <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.98fr)_minmax(0,1.02fr)]">
             <CofheBridge>
               <OrderForm onFlowUpdate={onFlowUpdate} onSystemEvent={onSystemEvent} />
             </CofheBridge>
             <FlowPipeline flowState={flowState} />
           </div>
           <StatusChecklist flowState={flowState} />
-          <ShadowInsightPanel />
         </>
       ) : (
-        <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           <WalletPanel />
           <div className="sb-card">
             <p className="sb-eyebrow">Next</p>
@@ -481,6 +528,8 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
           </div>
         </div>
       )}
+
+      <ShadowInsightPanel />
     </section>
   );
 }
@@ -800,26 +849,27 @@ function Dashboard() {
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <main className="min-h-screen min-w-0 lg:ml-[260px]">
-        <div className="mx-auto w-full max-w-[1600px] px-6 py-6 lg:px-8">
+      <main className="min-h-screen min-w-0 ml-[260px]">
+        <div className="mx-auto w-full max-w-[1560px] px-4 py-5 md:px-6 lg:px-8 xl:px-10">
           <div className="relative z-[2] min-h-screen min-w-0">
-          <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
-          <DashboardHeader
-            activeSection={activeSection}
-            institutionMode={institutionMode}
-            onConnectWallet={handleOpenWallet}
-          />
+            <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
+            <AppTopNavbar />
+            <DashboardHeader
+              activeSection={activeSection}
+              institutionMode={institutionMode}
+              onConnectWallet={handleOpenWallet}
+            />
 
-          <div className="pb-14">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              {sectionContent}
-            </motion.div>
-          </div>
+            <div className="pb-14">
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                {sectionContent}
+              </motion.div>
+            </div>
           </div>
         </div>
       </main>
