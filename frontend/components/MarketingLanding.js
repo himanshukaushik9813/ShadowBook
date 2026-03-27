@@ -48,6 +48,47 @@ const TIMELINE_STEPS = [
   },
 ];
 
+const HOW_IT_WORKS_VISUAL_STEPS = [
+  {
+    id: 'intent',
+    label: 'Intent',
+    detail: 'User input',
+    x: 58,
+    y: 208,
+  },
+  {
+    id: 'encrypt',
+    label: 'Encrypt',
+    detail: 'Payload sealed',
+    x: 168,
+    y: 118,
+  },
+  {
+    id: 'route',
+    label: 'Route',
+    detail: 'Hidden path',
+    x: 252,
+    y: 226,
+    highlight: true,
+  },
+  {
+    id: 'execute',
+    label: 'Execute',
+    detail: 'Execution core',
+    x: 338,
+    y: 170,
+    core: true,
+  },
+  {
+    id: 'settle',
+    label: 'Settle',
+    detail: 'Verified',
+    x: 455,
+    y: 122,
+    final: true,
+  },
+];
+
 const VALUE_ITEMS = [
   {
     title: 'Hidden Intent',
@@ -308,151 +349,217 @@ function HeroBackdrop({ styleGrid, styleGlowA, styleGlowB, styleVisual }) {
   );
 }
 
-function VisualNode({ index, title, helper, active = false, className = '' }) {
+function HeroFlowLabel({ label, x, active = false }) {
   return (
-    <motion.div
-      className={`absolute rounded-[22px] border px-4 py-3 backdrop-blur-xl ${className} ${
+    <motion.span
+      className={`pointer-events-none absolute -translate-x-1/2 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.11em] ${
         active
-          ? 'border-[#ffb36b]/20 bg-[#ff8a3c]/[0.08]'
-          : 'border-white/10 bg-white/[0.03]'
+          ? 'border-[#ffcf9a]/35 bg-[#ff8a3c]/[0.14] text-[#ffe3c6]'
+          : 'border-white/15 bg-black/30 text-[#d5d0ca]'
       }`}
-      animate={{
-        y: [0, -6, 0],
-        boxShadow: active
-          ? [
-              '0 10px 30px rgba(0,0,0,0.18)',
-              '0 18px 46px rgba(255,138,60,0.14)',
-              '0 10px 30px rgba(0,0,0,0.18)',
-            ]
-          : [
-              '0 10px 24px rgba(0,0,0,0.14)',
-              '0 14px 32px rgba(0,0,0,0.18)',
-              '0 10px 24px rgba(0,0,0,0.14)',
-            ],
-      }}
-      transition={{ duration: active ? 6.2 : 7.2, repeat: Infinity, ease: 'easeInOut' }}
+      style={{ left: x, top: '18%' }}
+      animate={active ? { opacity: [0.78, 1, 0.78], y: [0, -1, 0] } : { opacity: [0.62, 0.84, 0.62] }}
+      transition={{ duration: active ? 2.5 : 4.2, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-black/20 font-mono text-[11px] text-[#ffe0c2]">
-          0{index}
-        </span>
-        <p className="text-right text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">
-          {helper}
-        </p>
-      </div>
-      <p className="mt-3 text-sm font-medium leading-snug text-slate-100">{title}</p>
-    </motion.div>
+      {label}
+    </motion.span>
   );
 }
 
 function HeroVisual() {
-  const flowNodes = [
-    { title: 'Intent captured', helper: 'Input' },
-    { title: 'Payload sealed', helper: 'Encrypt' },
-    { title: 'Execution path hidden', helper: 'Route' },
-    { title: 'Settlement confirmed', helper: 'Proof' },
-  ];
+  const [isHovering, setIsHovering] = useState(false);
+  const stageLabels = ['Input', 'Encrypt', 'Route', 'Execute', 'Settle'];
+  const stageX = ['10%', '30%', '50%', '70%', '90%'];
+  const dividerX = ['20%', '40%', '60%', '80%'];
+  const particleDuration = isHovering ? 4.8 : 6.8;
+  const trailDuration = isHovering ? 3.8 : 6.4;
 
   return (
     <div className="relative mx-auto flex h-[360px] w-full max-w-[380px] items-center justify-center sm:h-[410px] sm:max-w-[470px] md:h-[450px] md:max-w-[540px]">
-      <div className="relative h-[450px] w-[540px] origin-center scale-[0.64] sm:scale-[0.78] md:scale-100">
-        <div className="absolute inset-0 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,12,10,0.8),rgba(10,8,7,0.84))] shadow-[0_24px_68px_rgba(0,0,0,0.32)] backdrop-blur-2xl" />
-        <div className="absolute inset-5 rounded-[26px] border border-white/8 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.09),transparent_28%),rgba(9,7,6,0.76)]" />
+      <motion.div
+        className="relative h-[450px] w-[540px] origin-center scale-[0.64] sm:scale-[0.78] md:scale-100"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        animate={{ scale: isHovering ? 1.01 : 1 }}
+        transition={{ duration: 0.3, ease: LUXURY_EASE }}
+      >
+        <div className="absolute inset-0 rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(16,12,10,0.82),rgba(10,8,7,0.86))] shadow-[0_24px_68px_rgba(0,0,0,0.34)] backdrop-blur-2xl" />
+        <div className="absolute inset-5 rounded-[26px] border border-white/8 bg-[radial-gradient(circle_at_24%_16%,rgba(255,179,107,0.1),transparent_32%),radial-gradient(circle_at_80%_76%,rgba(95,171,255,0.08),transparent_34%),rgba(9,7,6,0.76)]" />
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffcf9a]/30 to-transparent" />
 
         <div className="absolute left-7 right-7 top-7 flex items-center justify-between gap-4">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#9f8b78]">
-              Private execution system
+              Secure execution tunnel
             </p>
-            <p className="mt-1 text-sm font-medium text-white">Intent to settlement</p>
+            <p className="mt-1 text-sm font-medium text-white">Private orderflow transport</p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] px-3 py-1.5 text-[11px] text-[#ffe0c2]">
             <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
-            Hidden path
+            Hidden pipeline
           </span>
         </div>
 
-        <div className="absolute left-7 right-7 top-[86px] bottom-[70px] overflow-hidden rounded-[26px] border border-white/8 bg-[rgba(8,7,6,0.52)]">
-          <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(rgba(167,118,76,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.12) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/20 to-transparent" />
-          <div className="absolute left-8 top-8 h-24 w-24 rounded-full bg-[#ff8a3c]/[0.06] blur-[76px]" />
-          <div className="absolute right-10 bottom-8 h-24 w-24 rounded-full bg-[#f59e0b]/[0.05] blur-[78px]" />
-
-          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 486 292" fill="none" aria-hidden>
-            <defs>
-              <linearGradient id="heroWorkflowLine" x1="92" y1="60" x2="394" y2="232">
-                <stop offset="0%" stopColor="rgba(255,179,107,0.18)" />
-                <stop offset="50%" stopColor="rgba(255,179,107,0.56)" />
-                <stop offset="100%" stopColor="rgba(245,158,11,0.24)" />
-              </linearGradient>
-            </defs>
-            <path d="M122 74V220" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
-            <path d="M177 220C201 220 209 192 243 146" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
-            <path d="M301 146C334 146 349 102 364 74" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
-            <path d="M364 74V220" stroke="url(#heroWorkflowLine)" strokeWidth="2.2" strokeLinecap="round" />
-            <circle cx="122" cy="74" r="5" fill="#ffcf9a" fillOpacity="0.9" />
-            <circle cx="122" cy="220" r="5" fill="#ffb36b" fillOpacity="0.9" />
-            <circle cx="243" cy="146" r="5" fill="#ffb36b" fillOpacity="0.9" />
-            <circle cx="364" cy="74" r="5" fill="#ffcf9a" fillOpacity="0.9" />
-            <circle cx="364" cy="220" r="5" fill="#ffb36b" fillOpacity="0.9" />
-          </svg>
-
-          <motion.div
-            className="absolute left-[119px] top-[67px] h-3 w-3 rounded-full bg-[#ffb36b]"
-            animate={{ x: [0, 0, 121, 242, 242], y: [0, 146, 146, 0, 146], opacity: [0.15, 1, 1, 1, 0.2] }}
-            transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ boxShadow: '0 0 18px rgba(255,138,60,0.34)' }}
-          />
-
-          <div className="absolute left-[28px] top-[22px] w-[168px]">
-            <VisualNode index={1} title={flowNodes[0].title} helper={flowNodes[0].helper} className="relative w-full" />
-          </div>
-          <div className="absolute left-[28px] bottom-[22px] w-[168px]">
-            <VisualNode index={2} title={flowNodes[1].title} helper={flowNodes[1].helper} className="relative w-full" />
-          </div>
-          <div className="absolute right-[28px] top-[22px] w-[168px]">
-            <VisualNode index={3} title={flowNodes[2].title} helper={flowNodes[2].helper} active className="relative w-full" />
-          </div>
-          <div className="absolute right-[28px] bottom-[22px] w-[168px]">
-            <VisualNode index={4} title={flowNodes[3].title} helper={flowNodes[3].helper} className="relative w-full" />
-          </div>
-
-          <motion.div
-            className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffb36b]/14"
-            animate={{ scale: [1, 1.05, 1], opacity: [0.24, 0.48, 0.24] }}
-            transition={{ duration: 5.6, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute left-1/2 top-1/2 flex h-[118px] w-[118px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#ffb36b]/18 bg-[linear-gradient(180deg,rgba(255,138,60,0.14),rgba(180,83,9,0.05))] shadow-[0_20px_52px_rgba(255,138,60,0.14)]"
-            animate={{
-              boxShadow: [
-                '0 16px 42px rgba(255,138,60,0.12)',
-                '0 24px 56px rgba(255,138,60,0.2)',
-                '0 16px 42px rgba(255,138,60,0.12)',
-              ],
+        <div className="absolute left-7 right-7 top-[86px] bottom-7 overflow-hidden rounded-[26px] border border-white/8 bg-[rgba(8,7,6,0.52)]">
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(167,118,76,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.12) 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
             }}
-            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/20 to-transparent" />
+          <div className="absolute left-8 top-8 h-24 w-24 rounded-full bg-[#ff8a3c]/[0.07] blur-[72px]" />
+          <div className="absolute right-10 bottom-8 h-24 w-24 rounded-full bg-[#5ca8ff]/[0.07] blur-[74px]" />
+
+          <motion.div
+            className="absolute inset-0"
+            animate={{ x: isHovering ? -6 : 0, y: isHovering ? -2 : 0 }}
+            transition={{ duration: 0.35, ease: LUXURY_EASE }}
           >
-            <div className="rounded-full border border-white/10 bg-[rgba(10,8,7,0.84)] px-4 py-3 text-center">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[#9f8b78]">ShadowBook</p>
-              <p className="mt-1 text-[13px] font-medium text-[#ffe0c2]">Private execution</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.1em] text-slate-500">sealed routing core</p>
+            <div className="absolute left-5 right-5 top-1/2 h-[136px] -translate-y-1/2">
+              <motion.div
+                className="absolute inset-0 rounded-[999px] border border-white/12 bg-[linear-gradient(180deg,rgba(16,14,12,0.72),rgba(10,9,8,0.84))] backdrop-blur-2xl"
+                animate={{
+                  borderColor: isHovering ? 'rgba(255,179,107,0.24)' : 'rgba(255,255,255,0.12)',
+                  boxShadow: isHovering
+                    ? '0 0 36px rgba(255,138,60,0.18), 0 22px 54px rgba(0,0,0,0.28)'
+                    : '0 16px 38px rgba(0,0,0,0.26)',
+                }}
+                transition={{ duration: 0.25, ease: LUXURY_EASE }}
+              >
+                <motion.div
+                  className="absolute inset-[12px] rounded-[999px] border border-white/10 bg-[linear-gradient(90deg,rgba(255,138,60,0.08),rgba(95,171,255,0.09),rgba(255,189,133,0.08))]"
+                  animate={{ opacity: isHovering ? [0.75, 1, 0.75] : [0.55, 0.78, 0.55] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+                />
+
+                <div className="absolute left-[10%] right-[10%] top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-gradient-to-r from-[#ffb36b]/35 via-[#79b8ff]/40 to-[#ffcf9a]/35" />
+                <motion.div
+                  className="absolute left-[10%] right-[10%] top-1/2 h-px -translate-y-1/2 border-t border-dashed border-[#79b8ff]/30"
+                  animate={{ x: [0, -14, 0], opacity: [0.35, 0.6, 0.35] }}
+                  transition={{ duration: trailDuration, repeat: Infinity, ease: 'linear' }}
+                />
+
+                {dividerX.map((x) => (
+                  <div
+                    key={x}
+                    className="absolute top-5 bottom-5 w-px bg-gradient-to-b from-white/0 via-white/18 to-white/0"
+                    style={{ left: x }}
+                  />
+                ))}
+
+                {stageX.map((x, idx) => (
+                  <div
+                    key={x}
+                    className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+                    style={{
+                      left: x,
+                      borderColor:
+                        idx === 2
+                          ? 'rgba(255,207,154,0.62)'
+                          : idx === 4
+                            ? 'rgba(159,212,255,0.66)'
+                            : 'rgba(255,255,255,0.36)',
+                      background:
+                        idx === 2
+                          ? 'rgba(255,138,60,0.46)'
+                          : idx === 4
+                            ? 'rgba(95,171,255,0.44)'
+                            : 'rgba(255,255,255,0.18)',
+                      boxShadow:
+                        idx === 2
+                          ? '0 0 14px rgba(255,138,60,0.34)'
+                          : idx === 4
+                            ? '0 0 14px rgba(95,171,255,0.3)'
+                            : 'none',
+                    }}
+                  />
+                ))}
+              </motion.div>
+
+              {stageLabels.map((label, idx) => (
+                <HeroFlowLabel key={label} label={label} x={stageX[idx]} active={idx === 2} />
+              ))}
+
+              <motion.div
+                className="pointer-events-none absolute top-1/2 h-10 w-7 -translate-x-1/2 -translate-y-1/2 rounded-md border border-[#79b8ff]/35 bg-[#79b8ff]/10"
+                style={{ left: stageX[1] }}
+                animate={{ opacity: [0.08, 0.15, 0.88, 0.18, 0.08], scaleY: [0.82, 0.88, 1.2, 0.92, 0.82] }}
+                transition={{
+                  duration: particleDuration,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  times: [0, 0.16, 0.26, 0.36, 1],
+                }}
+              />
+
+              <motion.div
+                className="pointer-events-none absolute top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffcf9a]/30"
+                style={{ left: stageX[3] }}
+                animate={{ opacity: [0.18, 0.18, 0.18, 0.85, 0.18], scale: [0.82, 0.82, 0.82, 1.24, 0.82] }}
+                transition={{
+                  duration: particleDuration,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  times: [0, 0.58, 0.67, 0.78, 1],
+                }}
+              />
+
+              <motion.div
+                className="pointer-events-none absolute top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#9fd4ff]/35"
+                style={{ left: stageX[4] }}
+                animate={{ opacity: [0.14, 0.14, 0.14, 0.78, 0.14], scale: [0.78, 0.78, 0.78, 1.16, 0.78] }}
+                transition={{
+                  duration: particleDuration,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  times: [0, 0.76, 0.86, 0.96, 1],
+                }}
+              />
+
+              <motion.div
+                className="pointer-events-none absolute top-1/2 z-[3] h-8 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff8a3c]/40 blur-[10px]"
+                style={{ left: stageX[0] }}
+                animate={{
+                  left: stageX,
+                  opacity: [0.26, 0.42, 0.5, 0.42, 0.24],
+                  scaleX: [0.8, 1, 1.2, 1, 0.8],
+                }}
+                transition={{
+                  duration: particleDuration,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  times: [0, 0.24, 0.48, 0.72, 1],
+                }}
+              />
+
+              <motion.div
+                className="pointer-events-none absolute top-1/2 z-[4] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#ffdcb8]/60 bg-[radial-gradient(circle,rgba(255,226,196,0.95),rgba(255,138,60,0.5)_65%,rgba(255,138,60,0)_100%)]"
+                style={{ left: stageX[0] }}
+                animate={{
+                  left: stageX,
+                  scale: [0.9, 1.02, 1.14, 1.08, 0.92],
+                  boxShadow: [
+                    '0 0 12px rgba(255,138,60,0.24)',
+                    '0 0 18px rgba(95,171,255,0.26)',
+                    '0 0 22px rgba(255,138,60,0.32)',
+                    '0 0 22px rgba(255,138,60,0.34)',
+                    '0 0 18px rgba(95,171,255,0.28)',
+                  ],
+                }}
+                transition={{
+                  duration: particleDuration,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  times: [0, 0.24, 0.48, 0.72, 1],
+                }}
+              />
             </div>
           </motion.div>
         </div>
-
-        <div className="absolute bottom-6 left-6 right-6 grid grid-cols-4 gap-2">
-          {flowNodes.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-xl border border-white/10 bg-black/20 px-2.5 py-2 text-center"
-            >
-              <p className="text-[10px] uppercase tracking-[0.12em] text-slate-500">{item.helper}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      </motion.div>
 
       <div className="absolute bottom-4 left-4 right-4 md:hidden">
         <motion.div
@@ -462,9 +569,9 @@ function HeroVisual() {
           transition={{ duration: 0.55, delay: 0.65, ease: LUXURY_EASE }}
         >
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
-            Private flow
+            Secure flow
           </p>
-          <p className="mt-2 font-mono text-[11px] text-slate-300">intent → sealed → hidden path → settled</p>
+          <p className="mt-2 font-mono text-[11px] text-slate-300">input → encrypt → route → execute → settle</p>
         </motion.div>
       </div>
     </div>
@@ -827,123 +934,243 @@ function ValueDeliverySection() {
 function TimelineStep({ item, index }) {
   return (
     <motion.div
-      className="group relative overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-6 backdrop-blur-xl"
+      className="group relative overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.9),rgba(10,8,7,0.82))] p-6 shadow-[0_18px_42px_rgba(0,0,0,0.2)] backdrop-blur-xl"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       whileHover={{
-        y: -4,
-        borderColor: 'rgba(255,179,107,0.18)',
+        y: -6,
+        borderColor: 'rgba(255,179,107,0.22)',
+        boxShadow: '0 26px 56px rgba(0,0,0,0.28)',
       }}
       transition={{ duration: 0.45, delay: index * 0.08, ease: LUXURY_EASE }}
     >
-      <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-80" />
-      <div className="absolute right-5 top-5 h-14 w-14 rounded-full bg-white/[0.04] blur-2xl transition group-hover:bg-[#ff8a3c]/[0.08]" />
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] font-mono text-sm text-white">
+      <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#ffe0c2]/40 to-transparent opacity-80" />
+      <div className="absolute -top-10 right-4 h-24 w-24 rounded-full bg-[#ff8a3c]/[0.08] blur-3xl transition group-hover:bg-[#ff8a3c]/[0.12]" />
+      <div className="relative flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/[0.03] font-mono text-sm text-[#f7f4ef]">
           0{index + 1}
         </span>
-        <div>
-          <p className="text-lg font-semibold text-white">{item.title}</p>
-          <p className="mt-1 text-[11px] font-medium tracking-[0.12em] text-slate-600">
+        <div className="min-w-0">
+          <p className="text-lg font-semibold tracking-[-0.01em] text-white">{item.title}</p>
+          <p className="mt-1 text-[11px] font-medium tracking-[0.14em] text-[#8f8377]">
             PRIVATE STEP
           </p>
         </div>
       </div>
-      <p className="mt-4 text-sm leading-relaxed text-slate-400">{item.detail}</p>
-      <div className="mt-6 flex items-center gap-2 pt-4">
-        <span className="h-px flex-1 bg-white/10" />
-        <span className="text-[11px] text-slate-500">Stage {index + 1}</span>
+      <p className="relative mt-4 text-sm leading-relaxed text-slate-300">{item.detail}</p>
+      <div className="relative mt-6 flex items-center gap-2 pt-4">
+        <span className="h-px flex-1 bg-gradient-to-r from-[#ffb36b]/0 via-[#ffb36b]/35 to-[#ffb36b]/0" />
+        <span className="text-[11px] text-[#93897f]">Stage {index + 1}</span>
       </div>
     </motion.div>
   );
 }
 
-function HowItWorksVisualNode({ title, helper, className }) {
+function FloatingCoin({ label, tone = 'orange', className = '', delay = 0 }) {
+  const warm = tone === 'orange';
+
   return (
-    <div
-      className={`absolute rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.92),rgba(10,8,7,0.88))] px-4 py-3 shadow-[0_16px_34px_rgba(0,0,0,0.2)] ${className}`}
+    <motion.div
+      className={`pointer-events-none absolute flex h-11 w-11 items-center justify-center rounded-full border text-[10px] font-semibold tracking-[0.08em] ${className} ${
+        warm
+          ? 'border-[#ffb36b]/35 bg-[linear-gradient(180deg,rgba(255,138,60,0.26),rgba(26,18,13,0.9))] text-[#ffe2c4]'
+          : 'border-[#79b8ff]/35 bg-[linear-gradient(180deg,rgba(83,166,255,0.2),rgba(10,14,20,0.9))] text-[#d7ecff]'
+      }`}
+      animate={{
+        y: [0, -7, 0],
+        rotate: [0, warm ? 6 : -6, 0],
+        boxShadow: warm
+          ? [
+              '0 0 0 rgba(255,138,60,0.0)',
+              '0 0 26px rgba(255,138,60,0.26)',
+              '0 0 0 rgba(255,138,60,0.0)',
+            ]
+          : [
+              '0 0 0 rgba(83,166,255,0.0)',
+              '0 0 24px rgba(83,166,255,0.24)',
+              '0 0 0 rgba(83,166,255,0.0)',
+            ],
+      }}
+      transition={{ duration: 8.2, delay, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#8f7f71]">{helper}</p>
-      <p className="mt-1 text-sm font-medium text-white">{title}</p>
-    </div>
+      {label}
+    </motion.div>
   );
 }
 
 function HowItWorksVisualPanel() {
+  const routePath = 'M58 208 C110 162 140 126 168 118 C210 106 222 186 252 226 C276 258 307 216 338 170 C368 126 416 112 455 122';
+  const altPath = 'M58 208 C102 184 132 150 178 160 C216 168 241 198 282 188 C324 176 365 144 455 122';
+
   return (
     <motion.div
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.92),rgba(10,8,7,0.86))] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl"
+      className="relative mx-auto w-full max-w-[590px] overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,14,10,0.94),rgba(9,8,7,0.9))] p-5 shadow-[0_26px_72px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-6"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.35 }}
       transition={{ duration: 0.5, ease: LUXURY_EASE }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(255,138,60,0.12),transparent_22%),radial-gradient(circle_at_78%_74%,rgba(245,158,11,0.08),transparent_24%)]" />
-      <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'linear-gradient(rgba(167,118,76,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.12) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
-      <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/28 to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_14%,rgba(255,138,60,0.16),transparent_28%),radial-gradient(circle_at_80%_82%,rgba(245,158,11,0.08),transparent_26%)]" />
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(167,118,76,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.1) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+      <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/30 to-transparent" />
       <motion.div
-        className="pointer-events-none absolute left-[-6%] top-[18%] h-24 w-24 rounded-full bg-[#ff8a3c]/[0.08] blur-[72px]"
+        className="pointer-events-none absolute left-[-10%] top-[22%] h-24 w-24 rounded-full bg-[#ff8a3c]/[0.1] blur-[72px]"
         animate={{ opacity: [0.34, 0.52, 0.34], x: [0, 8, 0], y: [0, -6, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <div className="relative flex items-center justify-between gap-3">
+      <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#9a8773]">
-            Private route
+            Private execution flow
           </p>
-          <p className="mt-1 text-sm font-medium text-white">Order to settlement</p>
+          <p className="mt-1 text-sm font-semibold text-white">
+            No mempool exposure. No visible intent. Fully sealed execution.
+          </p>
         </div>
-        <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] px-3 py-1.5 text-[11px] text-[#ffe0c2]">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[#ffb36b]/18 bg-[#ff8a3c]/[0.1] px-3 py-1.5 text-[11px] font-medium text-[#ffe0c2]">
           <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
-          Sealed path
+          Protected route active
         </span>
       </div>
 
-      <div className="relative mt-5 h-[250px] overflow-hidden rounded-[26px] border border-white/8 bg-[rgba(8,7,6,0.5)]">
-        <div className="absolute inset-x-[22%] top-[33%] h-px bg-gradient-to-r from-[#ffb36b]/0 via-[#ffb36b]/55 to-[#ffb36b]/0" />
-        <div className="absolute inset-x-[22%] bottom-[33%] h-px bg-gradient-to-r from-[#ffb36b]/0 via-[#ffb36b]/45 to-[#ffb36b]/0" />
-        <div className="absolute left-[27%] top-[34%] h-[32%] w-px bg-gradient-to-b from-[#ffb36b]/0 via-[#ffb36b]/38 to-[#ffb36b]/0" />
-        <div className="absolute right-[27%] top-[34%] h-[32%] w-px bg-gradient-to-b from-[#ffb36b]/0 via-[#ffb36b]/38 to-[#ffb36b]/0" />
+      <div className="relative mt-5 overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,rgba(11,9,7,0.72),rgba(8,7,6,0.58))] p-4 md:p-5">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(167,118,76,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(167,118,76,0.1) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
+        />
+        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/24 to-transparent" />
+        <div className="pointer-events-none absolute left-4 top-[38%] h-24 w-16 rounded-full bg-[#ff8a3c]/[0.1] blur-3xl" />
+        <div className="pointer-events-none absolute right-6 top-[62%] h-24 w-16 rounded-full bg-[#5ca8ff]/[0.08] blur-3xl" />
 
-        <motion.div
-          className="pointer-events-none absolute left-[22%] top-[33%] h-2.5 w-2.5 rounded-full bg-[#ffcf9a] shadow-[0_0_18px_rgba(255,138,60,0.32)]"
-          animate={{ x: ['0%', '235%', '235%', '0%'], y: ['0%', '0%', '450%', '450%'] }}
-          transition={{ duration: 6.4, repeat: Infinity, ease: 'easeInOut' }}
-        />
+        <div className="relative h-[300px] overflow-hidden rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,9,8,0.68),rgba(9,8,7,0.5))] md:h-[320px]">
+          <FloatingCoin label="ETH" className="left-[12%] top-[11%]" delay={0.1} />
+          <FloatingCoin label="SB" className="right-[15%] top-[14%]" delay={0.8} />
+          <FloatingCoin label="TKN" tone="blue" className="right-[9%] bottom-[15%]" delay={1.4} />
 
-        <HowItWorksVisualNode
-          title="Order captured"
-          helper="User"
-          className="left-4 top-4 w-[42%]"
-        />
-        <HowItWorksVisualNode
-          title="Payload sealed"
-          helper="Encrypt"
-          className="right-4 top-4 w-[42%]"
-        />
-        <HowItWorksVisualNode
-          title="Private route"
-          helper="Relay"
-          className="left-4 bottom-4 w-[42%]"
-        />
-        <HowItWorksVisualNode
-          title="Settlement confirmed"
-          helper="Proof"
-          className="right-4 bottom-4 w-[42%]"
-        />
+          <svg
+            className="pointer-events-none absolute inset-0 h-full w-full"
+            viewBox="0 0 520 320"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="sbRouteGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(255,138,60,0.26)" />
+                <stop offset="42%" stopColor="rgba(95,171,255,0.28)" />
+                <stop offset="100%" stopColor="rgba(255,190,132,0.32)" />
+              </linearGradient>
+            </defs>
 
-        <motion.div
-          className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#ffb36b]/18 bg-[linear-gradient(180deg,rgba(255,138,60,0.12),rgba(180,83,9,0.04))] shadow-[0_20px_40px_rgba(255,138,60,0.08)]"
-          animate={{ boxShadow: ['0 20px 40px rgba(255,138,60,0.08)', '0 24px 52px rgba(255,138,60,0.14)', '0 20px 40px rgba(255,138,60,0.08)'] }}
-          transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <div className="rounded-full border border-[#ffcf9a]/18 bg-[rgba(11,9,8,0.82)] px-4 py-2 text-center">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[#9a8773]">ShadowBook</p>
-            <p className="mt-1 text-sm font-medium text-[#ffe0c2]">Execution</p>
+            <path
+              d={routePath}
+              stroke="url(#sbRouteGradient)"
+              strokeWidth="2.4"
+              fill="none"
+              strokeLinecap="round"
+              style={{ filter: 'drop-shadow(0 0 10px rgba(255,138,60,0.25))' }}
+            />
+
+            <motion.path
+              d={altPath}
+              stroke="rgba(255,190,132,0.28)"
+              strokeWidth="1.4"
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray="6 8"
+              animate={{ strokeDashoffset: [0, -180] }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            />
+          </svg>
+
+          <motion.div
+            className="pointer-events-none absolute z-[4] h-4 w-4 rounded-full border border-[#ffdcb8]/50 bg-[radial-gradient(circle,rgba(255,222,190,0.95),rgba(255,138,60,0.4)_65%,rgba(255,138,60,0)_100%)]"
+            style={{ left: 50, top: 200 }}
+            animate={{
+              x: [0, 110, 194, 280, 397],
+              y: [0, -88, 16, -42, -80],
+              scale: [0.9, 1.06, 1.14, 1, 0.92],
+            }}
+            transition={{ duration: 6.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="pointer-events-none absolute z-[3] h-8 w-8 rounded-full bg-[#ff8a3c]/40 blur-[10px]"
+            style={{ left: 44, top: 194 }}
+            animate={{
+              x: [0, 110, 194, 280, 397],
+              y: [0, -88, 16, -42, -80],
+              opacity: [0.24, 0.42, 0.5, 0.36, 0.24],
+            }}
+            transition={{ duration: 6.6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+
+          <motion.div
+            className="pointer-events-none absolute z-[3] rounded-lg border border-[#79b8ff]/32 bg-[#79b8ff]/10 px-2 py-1 text-[9px] font-medium tracking-[0.12em] text-[#d7ecff]"
+            style={{ left: 140, top: 86 }}
+            animate={{ opacity: [0.2, 1, 0.25], scale: [0.92, 1, 0.96] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            ENCRYPT
+          </motion.div>
+
+          <div className="pointer-events-none absolute inset-0">
+            {HOW_IT_WORKS_VISUAL_STEPS.map((step) => {
+              const style = {
+                left: `${(step.x / 520) * 100}%`,
+                top: `${(step.y / 320) * 100}%`,
+              };
+
+              return (
+                <div
+                  key={step.id}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={style}
+                >
+                  {step.core ? (
+                    <div className="relative">
+                      <motion.div
+                        className="absolute inset-[-18px] rounded-full border border-[#ffb36b]/20"
+                        animate={{ scale: [0.9, 1.08, 0.9], opacity: [0.35, 0.64, 0.35] }}
+                        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                      <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-[#ffcf9a]/40 bg-[radial-gradient(circle,rgba(255,168,102,0.34),rgba(18,13,10,0.92)_70%)] shadow-[0_0_26px_rgba(255,138,60,0.28)]">
+                        <span className="h-2 w-2 rounded-full bg-[#ffe2c4]" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className={`flex h-4 w-4 items-center justify-center rounded-full border ${
+                        step.highlight
+                          ? 'border-[#ffcf9a]/55 bg-[#ff8a3c]/[0.42] shadow-[0_0_18px_rgba(255,138,60,0.36)]'
+                          : step.final
+                            ? 'border-[#9fd4ff]/52 bg-[#5ca8ff]/[0.32] shadow-[0_0_16px_rgba(95,171,255,0.3)]'
+                            : 'border-white/35 bg-white/18'
+                      }`}
+                    />
+                  )}
+
+                  <div className="mt-2.5 min-w-[74px] text-center">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#f3e3d4]">
+                      {step.label}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-[#9f9488]">{step.detail}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );
@@ -951,36 +1178,45 @@ function HowItWorksVisualPanel() {
 
 function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="relative px-4 py-20 md:px-6">
-      <div className="pointer-events-none absolute left-[12%] top-20 hidden h-56 w-56 rounded-full bg-[#ff8a3c]/[0.06] blur-[100px] md:block" />
-      <div className="pointer-events-none absolute bottom-20 right-[12%] hidden h-56 w-56 rounded-full bg-[#f59e0b]/[0.05] blur-[110px] md:block" />
+    <section id="how-it-works" className="relative px-4 py-24 md:px-6">
+      <div className="pointer-events-none absolute left-[10%] top-20 hidden h-64 w-64 rounded-full bg-[#ff8a3c]/[0.06] blur-[115px] md:block" />
+      <div className="pointer-events-none absolute bottom-16 right-[10%] hidden h-64 w-64 rounded-full bg-[#f59e0b]/[0.05] blur-[120px] md:block" />
 
       <div className="sb-container relative">
         <SectionBridge />
-        <SectionReveal className="mt-8 overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.88),rgba(10,8,7,0.82))] p-5 shadow-[0_24px_76px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-7">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_34%),radial-gradient(circle_at_18%_70%,rgba(255,138,60,0.1),transparent_24%),radial-gradient(circle_at_84%_24%,rgba(245,158,11,0.08),transparent_26%)]" />
-          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
+        <SectionReveal className="mt-8 overflow-hidden rounded-[38px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,13,10,0.9),rgba(10,8,7,0.83))] p-6 shadow-[0_26px_78px_rgba(0,0,0,0.3)] backdrop-blur-2xl md:p-8 lg:p-9">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_34%),radial-gradient(circle_at_16%_72%,rgba(255,138,60,0.11),transparent_24%),radial-gradient(circle_at_84%_22%,rgba(245,158,11,0.08),transparent_26%)]" />
+          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
 
-          <div className="relative z-[2] grid gap-8 border-b border-white/8 pb-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(340px,0.98fr)] lg:items-center">
-            <div className="w-full max-w-4xl min-w-0">
-              <p className="sb-eyebrow">How it works</p>
-              <h2 className="mt-3 max-w-4xl font-display text-[2.15rem] font-semibold tracking-[-0.04em] text-white sm:text-[2.5rem] md:text-[3rem] xl:text-[3.4rem]">
+          <div className="relative z-[2] grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
+            <div className="w-full min-w-0">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.03] px-3 py-1.5">
+                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#f6c08d]" />
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#aa9a8b]">How it works</p>
+              </div>
+
+              <h2 className="mt-5 max-w-3xl font-display text-[2.2rem] font-semibold leading-[1.02] tracking-[-0.045em] text-white sm:text-[2.55rem] md:text-[3.05rem] xl:text-[3.35rem]">
                 A private path from order to settlement
               </h2>
-              <div className="mt-5 inline-flex w-fit items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300">
-                <span className="inline-flex h-2 w-2 rounded-full bg-[#f6c08d]" />
-                Three-stage workflow
+
+              <p className="mt-5 max-w-[35rem] text-base leading-relaxed text-[#b7b0a8] md:text-[1.02rem]">
+                ShadowBook transforms raw intent into encrypted orderflow, routes it through a protected execution path, and finishes with a proof-backed settlement record.
+              </p>
+
+              <div className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/12 bg-white/[0.03] px-3.5 py-1.5 text-xs text-slate-200">
+                <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
+                Five-stage protected workflow
               </div>
             </div>
             <HowItWorksVisualPanel />
           </div>
 
-          <div className="relative z-[2] mt-10 grid gap-6 lg:grid-cols-3">
-            <div className="pointer-events-none absolute left-[16.5%] right-[16.5%] top-[42px] hidden h-px bg-white/10 lg:block" />
+          <div className="relative z-[2] mt-12 grid gap-6 lg:grid-cols-3">
+            <div className="pointer-events-none absolute left-[16%] right-[16%] top-[42px] hidden h-px bg-gradient-to-r from-[#ffb36b]/0 via-[#ffb36b]/34 to-[#ffb36b]/0 lg:block" />
             <motion.div
               className="pointer-events-none absolute top-[38px] hidden h-2.5 w-2.5 rounded-full bg-[#ffb36b] shadow-[0_0_18px_rgba(255,138,60,0.3)] lg:block"
-              initial={{ x: '16.5%' }}
-              whileInView={{ x: ['0%', '33%', '66%'] }}
+              initial={{ x: '16%' }}
+              whileInView={{ x: ['0%', '36%', '72%'] }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: 5.4, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -1130,16 +1366,18 @@ function WowFactorSection() {
           />
 
           <div className="relative z-[2] flex flex-col gap-6">
-            <div className="flex flex-col gap-4 border-b border-white/8 pb-5 md:flex-row md:items-end md:justify-between">
-              <div>
+            <div className="mb-6 flex flex-col items-start justify-start gap-2 border-b border-white/8 pb-5 text-left">
+              <div className="w-full">
                 <p className="text-xs font-medium tracking-[0.16em] text-slate-500">Execution path</p>
                 <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white md:text-3xl">
                   Plain order to verified settlement
                 </h3>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300">
+              <div className="mt-2 flex items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300">
                 <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
                 Simulated live sequence
+                </span>
               </div>
             </div>
 
