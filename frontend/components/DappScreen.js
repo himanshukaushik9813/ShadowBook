@@ -144,58 +144,23 @@ function CloseIcon() {
   );
 }
 
-function AppTopLink({ href, children, external = false }) {
-  const className =
-    'inline-flex h-9 items-center rounded-full px-3 text-sm text-[#b8aea3] transition-colors duration-200 hover:text-white';
-
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noreferrer" className={className}>
-        {children}
-      </a>
-    );
-  }
-
+function MobileAppBar({ onOpenMenu }) {
   return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
-function AppTopNavbar({ onOpenMenu }) {
-  return (
-    <div className="sticky top-3 z-[35] mb-5">
-      <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px] md:px-5">
+    <div className="sticky top-3 z-[35] mb-5 md:hidden">
+      <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
-        <div className="absolute left-8 top-1/2 hidden h-10 w-20 -translate-y-1/2 rounded-full bg-[#ff8a3c]/[0.06] blur-3xl lg:block" />
 
-        <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
-            <span className="hidden h-8 items-center rounded-full border border-white/8 bg-white/[0.025] px-3 text-[11px] font-medium tracking-[0.12em] text-[#a99684] lg:inline-flex">
-              Workspace
-            </span>
-          </div>
-
-          <nav className="flex flex-wrap items-center gap-1">
-            <button
-              type="button"
-              onClick={onOpenMenu}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white min-[420px]:hidden"
-            >
-              <MenuIcon />
-              Menu
-            </button>
-            <AppTopLink href="/">Home</AppTopLink>
-            <AppTopLink href="https://github.com/himanshukaushik9813/ShadowBook" external>
-              Docs
-            </AppTopLink>
-            <AppTopLink href="https://github.com/himanshukaushik9813/ShadowBook" external>
-              GitHub
-            </AppTopLink>
-          </nav>
+        <div className="relative flex items-center justify-between gap-3">
+          <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
+          <button
+            type="button"
+            onClick={onOpenMenu}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 text-sm text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white"
+          >
+            <MenuIcon />
+            Menu
+          </button>
         </div>
       </div>
     </div>
@@ -205,7 +170,6 @@ function AppTopNavbar({ onOpenMenu }) {
 function SidebarContent({ activeSection, onChange, onClose }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const compactRailStatus = isConnected ? 'ON' : 'OFF';
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden px-4 py-5">
@@ -215,18 +179,12 @@ function SidebarContent({ activeSection, onChange, onClose }) {
       <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
       <div className="relative z-[2] flex items-center justify-between gap-3 px-2">
-        <Link href="/" className="flex min-w-0 items-center justify-center gap-3 sm:justify-start">
-          <WorkspaceMark />
-          <div className="hidden min-w-0 sm:block">
-            <p className="truncate text-[15px] font-semibold tracking-[-0.01em] text-white">ShadowBook</p>
-            <p className="text-[10px] text-[#8f7f71]">Private execution</p>
-          </div>
-        </Link>
+        <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
         {onClose ? (
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white min-[420px]:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
             aria-label="Close navigation"
           >
             <CloseIcon />
@@ -245,30 +203,25 @@ function SidebarContent({ activeSection, onChange, onClose }) {
                 onChange(item.key);
                 if (onClose) onClose();
               }}
-              className={`flex w-full items-center justify-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200 sm:justify-start sm:px-3.5 ${
+              className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 ${
                 active
                   ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.07] text-white'
                   : 'border-transparent text-[#9f9387] hover:border-white/8 hover:bg-[#12100e] hover:text-white'
               }`}
             >
-              <span className={`hidden h-8 w-0.5 rounded-full sm:block ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
+              <span className={`h-8 w-0.5 rounded-full ${active ? 'bg-[#ffb36b]' : 'bg-transparent'}`} />
               <NavIcon name={item.icon} active={active} />
-              <span className="hidden text-sm font-medium sm:block">{item.title}</span>
+              <span className="text-sm font-medium">{item.title}</span>
             </button>
           );
         })}
       </nav>
 
-      <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-3 py-3 sm:px-4 sm:py-4">
-        <div className="flex items-center justify-center sm:hidden">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-medium text-[#d4cbc2]">
-            {compactRailStatus}
-          </span>
-        </div>
-        <p className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71] sm:block">
+      <div className="relative z-[2] mt-auto rounded-2xl border border-white/8 bg-[rgba(18,14,11,0.76)] px-4 py-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8f7f71]">
           Status
         </p>
-        <div className="mt-3 hidden space-y-2 sm:block">
+        <div className="mt-3 space-y-2">
           <p className="text-sm text-white">
             {isConnected ? 'Wallet connected' : 'Wallet not connected'}
           </p>
@@ -279,7 +232,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
             {isConnected ? networkLabel(chainId) : 'Sepolia / Arbitrum Sepolia'}
           </p>
         </div>
-        <div className="mt-4 hidden border-t border-white/8 pt-3 text-[11px] text-[#6f6a64] sm:block">
+        <div className="mt-4 border-t border-white/8 pt-3 text-[11px] text-[#6f6a64]">
           ShadowBook v1.0
         </div>
       </div>
@@ -289,7 +242,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[88px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] min-[420px]:flex min-[420px]:flex-col sm:w-[252px]">
+    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[256px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -302,7 +255,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         <>
           <motion.button
             type="button"
-            className="fixed inset-0 z-[44] bg-black/60 min-[420px]:hidden"
+            className="fixed inset-0 z-[44] bg-black/60 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -311,7 +264,7 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
             aria-label="Close navigation overlay"
           />
           <motion.aside
-            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] min-[420px]:hidden"
+            className="fixed inset-y-0 left-0 z-[45] flex w-[86vw] max-w-[300px] flex-col border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.99),rgba(7,6,6,1))] shadow-[24px_0_80px_rgba(0,0,0,0.38)] md:hidden"
             initial={{ x: -24, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -24, opacity: 0 }}
@@ -322,30 +275,6 @@ function MobileSidebarDrawer({ open, activeSection, onChange, onClose }) {
         </>
       ) : null}
     </AnimatePresence>
-  );
-}
-
-function MobileNav({ activeSection, onChange }) {
-  return (
-    <div className="mb-6 flex w-full gap-2 overflow-x-auto pb-1 pt-1 min-[420px]:hidden">
-      {NAV_ITEMS.map((item) => {
-        const active = activeSection === item.key;
-        return (
-          <button
-            key={item.key}
-            type="button"
-            onClick={() => onChange(item.key)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-all duration-300 ${
-              active
-                ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.1] text-[#ffe0c2]'
-                : 'border-white/10 bg-[rgba(18,14,11,0.72)] text-slate-300'
-            }`}
-          >
-            {item.title}
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -870,15 +799,14 @@ function Dashboard() {
           onClose={() => setMobileSidebarOpen(false)}
         />
 
-        <div className="min-w-0 w-full min-[420px]:pl-[88px] sm:pl-[252px]">
+        <div className="min-w-0 w-full md:pl-[256px]">
           <div className="sb-app-container relative z-[2] py-5 lg:py-7">
-              <AppTopNavbar onOpenMenu={() => setMobileSidebarOpen(true)} />
+              <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
               <DashboardHeader
                 activeSection={activeSection}
                 institutionMode={institutionMode}
                 onConnectWallet={handleOpenWallet}
               />
-              <MobileNav activeSection={activeSection} onChange={setActiveSection} />
 
               <div className="pb-14">
                 <motion.div
