@@ -242,7 +242,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed inset-y-0 left-0 top-0 z-[40] hidden h-screen w-[260px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] lg:flex lg:flex-col">
+    <aside className="hidden lg:flex fixed left-0 top-0 z-40 h-screen w-[260px] flex-col border-r border-white/10 bg-[#070606] shadow-[20px_0_60px_rgba(0,0,0,0.28)]">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -302,8 +302,8 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
         <div className="absolute right-16 top-1/2 hidden h-16 w-32 -translate-y-1/2 rounded-full bg-[#f59e0b]/[0.04] blur-[72px] xl:block" />
         <div className="absolute inset-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),inset_0_-30px_60px_rgba(0,0,0,0.16)]" />
 
-        <div className="relative grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-          <Link href="/" className="group min-w-0 transition-opacity hover:opacity-95">
+        <div className="relative flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <Link href="/" className="group min-w-0 transition-opacity hover:opacity-95 xl:flex-1">
             <div className="inline-flex max-w-full items-center gap-4 rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
               <WorkspaceMark />
               <div className="min-w-0">
@@ -317,9 +317,9 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
             </div>
           </Link>
 
-          <div className="rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-            <div className="flex flex-col gap-3 lg:items-end">
-              <div className="flex flex-wrap items-center gap-2.5 lg:justify-end">
+          <div className="w-full max-w-full rounded-[22px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] xl:w-auto xl:min-w-[360px]">
+            <div className="flex flex-col gap-3 xl:items-end">
+              <div className="flex flex-wrap items-center gap-2.5 xl:justify-end">
                 <WorkspaceMetaPill
                   label="Contract"
                   value={
@@ -338,7 +338,7 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
                 ) : null}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 lg:justify-end">
+              <div className="flex flex-wrap items-center gap-2.5 xl:justify-end">
                 {isConnected ? (
                   <button
                     type="button"
@@ -425,7 +425,7 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
       <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.84),rgba(11,9,8,0.8))] p-6 shadow-[0_20px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl">
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
         <div className="absolute left-[-18px] top-8 h-20 w-20 rounded-full bg-[#ff8a3c]/[0.06] blur-[70px]" />
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
             <p className="sb-eyebrow">Trade</p>
             <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white md:text-4xl">
@@ -526,7 +526,7 @@ function ProofWorkspace({ flowState }) {
         <div className="absolute right-10 top-10 h-28 w-28 rounded-full bg-[#f59e0b]/[0.06] blur-[82px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_36%)]" />
 
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-2xl">
             <p className="sb-eyebrow">Proofs</p>
             <h2 className="mt-3 font-display text-4xl font-semibold tracking-[-0.045em] text-white md:text-5xl">
@@ -759,24 +759,25 @@ function Dashboard() {
   ]);
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-[#050505] text-white">
+    <div className="relative min-h-screen bg-[#050505] text-white">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <motion.div
-        className="pointer-events-none absolute left-[-10%] top-[4%] h-[360px] w-[360px] rounded-full bg-[#ff8a3c]/[0.11] blur-[140px]"
+        className="absolute left-[-10%] top-[4%] h-[360px] w-[360px] rounded-full bg-[#ff8a3c]/[0.11] blur-[140px]"
         animate={{ opacity: [0.44, 0.66, 0.44], scale: [1, 1.08, 1], x: [0, 18, 0], y: [0, -10, 0] }}
         transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="pointer-events-none absolute bottom-[-8%] right-[-6%] h-[420px] w-[420px] rounded-full bg-[#f59e0b]/[0.1] blur-[150px]"
+        className="absolute bottom-[-8%] right-[-6%] h-[420px] w-[420px] rounded-full bg-[#f59e0b]/[0.1] blur-[150px]"
         animate={{ opacity: [0.34, 0.56, 0.34], scale: [1, 0.96, 1.04, 1], x: [0, -20, 0], y: [0, 14, 0] }}
         transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 0.9 }}
       />
       <motion.div
-        className="pointer-events-none absolute left-[28%] top-[36%] h-[240px] w-[240px] rounded-full bg-[#b45309]/[0.06] blur-[120px]"
+        className="absolute left-[28%] top-[36%] h-[240px] w-[240px] rounded-full bg-[#b45309]/[0.06] blur-[120px]"
         animate={{ opacity: [0.2, 0.34, 0.2], scale: [1, 1.04, 1] }}
         transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
       />
       <motion.div
-        className="pointer-events-none absolute inset-y-0 left-[-12%] w-[22%]"
+        className="absolute inset-y-0 left-[-12%] w-[22%]"
         animate={{ x: ['0%', '420%'], opacity: [0, 0.55, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
         style={{
@@ -785,10 +786,11 @@ function Dashboard() {
           filter: 'blur(18px)',
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(255,138,60,0.12),transparent_24%),radial-gradient(circle_at_84%_78%,rgba(245,158,11,0.08),transparent_26%),linear-gradient(180deg,rgba(13,11,9,0.2),rgba(5,5,5,0))]" />
-      <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.58)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(255,138,60,0.12),transparent_24%),radial-gradient(circle_at_84%_78%,rgba(245,158,11,0.08),transparent_26%),linear-gradient(180deg,rgba(13,11,9,0.2),rgba(5,5,5,0))]" />
+      <div className="absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.58)]" />
       <div className="sb-grid-bg" />
       <div className="sb-noise opacity-[0.03]" />
+      </div>
 
       <AppSidebar activeSection={activeSection} onChange={setActiveSection} />
       <MobileSidebarDrawer
@@ -798,8 +800,9 @@ function Dashboard() {
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <main className="min-h-screen w-full lg:ml-[260px] lg:w-[calc(100%-260px)]">
-        <div className="relative z-[2] min-h-screen px-4 py-5 md:px-6 md:py-6 xl:px-8 xl:py-7">
+      <main className="min-h-screen min-w-0 lg:ml-[260px]">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-6 lg:px-8">
+          <div className="relative z-[2] min-h-screen min-w-0">
           <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
           <DashboardHeader
             activeSection={activeSection}
@@ -816,6 +819,7 @@ function Dashboard() {
             >
               {sectionContent}
             </motion.div>
+          </div>
           </div>
         </div>
       </main>
