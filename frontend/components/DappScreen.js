@@ -149,10 +149,11 @@ function AppTopLink({ href, children, external = false }) {
 
 function AppTopNavbar() {
   return (
-    <div className="mb-4">
-      <div className="relative overflow-hidden rounded-[22px] border border-white/10 bg-[rgba(18,14,12,0.72)] px-4 py-3 shadow-[0_16px_38px_rgba(0,0,0,0.22)] backdrop-blur-[12px] md:px-5">
+    <div className="sticky top-3 z-[35] mb-5">
+      <div className="relative overflow-hidden rounded-[22px] border border-[#ffcf9a]/12 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-4 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px] md:px-5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
+        <div className="absolute left-8 top-1/2 hidden h-10 w-20 -translate-y-1/2 rounded-full bg-[#ff8a3c]/[0.06] blur-3xl lg:block" />
 
         <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
@@ -182,11 +183,12 @@ function AppSidebar({ activeSection, onChange }) {
   const chainId = useChainId();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/8 bg-[linear-gradient(180deg,rgba(11,9,8,0.96),rgba(7,6,6,0.98))] md:block">
+    <aside className="fixed inset-y-0 left-0 z-[40] hidden w-[252px] border-r border-white/10 bg-[linear-gradient(180deg,rgba(11,9,8,0.98),rgba(7,6,6,0.99))] shadow-[20px_0_60px_rgba(0,0,0,0.28)] md:flex md:flex-col">
       <div className="relative flex h-full flex-col overflow-hidden px-4 py-5">
         <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/18 to-transparent" />
         <div className="absolute left-[-40px] top-16 h-28 w-28 rounded-full bg-[#ff8a3c]/[0.05] blur-[72px]" />
         <div className="absolute bottom-10 right-[-54px] h-32 w-32 rounded-full bg-[#f59e0b]/[0.04] blur-[84px]" />
+        <div className="absolute right-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
         <div className="relative z-[2] flex items-center px-2">
           <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
@@ -250,8 +252,8 @@ function MobileNav({ activeSection, onChange }) {
             onClick={() => onChange(item.key)}
             className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-all duration-300 ${
               active
-                ? 'border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] text-[#ffe0c2]'
-                : 'border-white/10 bg-white/[0.02] text-slate-300'
+                ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.1] text-[#ffe0c2]'
+                : 'border-white/10 bg-[rgba(18,14,11,0.72)] text-slate-300'
             }`}
           >
             {item.title}
