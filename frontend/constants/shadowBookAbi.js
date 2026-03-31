@@ -1,133 +1,28 @@
-export const shadowBookAbi = [
-  {
-    type: 'function',
-    name: 'placeOrder',
-    stateMutability: 'nonpayable',
-    inputs: [
-      {
-        name: 'encryptedPrice',
-        type: 'tuple',
-        internalType: 'struct InEuint32',
-        components: [
-          { name: 'ctHash', type: 'uint256', internalType: 'uint256' },
-          { name: 'securityZone', type: 'uint8', internalType: 'uint8' },
-          { name: 'utype', type: 'uint8', internalType: 'uint8' },
-          { name: 'signature', type: 'bytes', internalType: 'bytes' }
-        ]
-      },
-      {
-        name: 'encryptedAmount',
-        type: 'tuple',
-        internalType: 'struct InEuint32',
-        components: [
-          { name: 'ctHash', type: 'uint256', internalType: 'uint256' },
-          { name: 'securityZone', type: 'uint8', internalType: 'uint8' },
-          { name: 'utype', type: 'uint8', internalType: 'uint8' },
-          { name: 'signature', type: 'bytes', internalType: 'bytes' }
-        ]
-      },
-      { name: 'isBuy', type: 'bool', internalType: 'bool' }
-    ],
-    outputs: [{ name: 'orderId', type: 'uint256', internalType: 'uint256' }]
-  },
-  {
-    type: 'function',
-    name: 'getOrderResult',
-    stateMutability: 'view',
-    inputs: [{ name: 'orderId', type: 'uint256', internalType: 'uint256' }],
-    outputs: [
-      {
-        name: 'encryptedExecutionPrice',
-        type: 'bytes32',
-        internalType: 'bytes32'
-      },
-      {
-        name: 'encryptedFillStatus',
-        type: 'bytes32',
-        internalType: 'bytes32'
-      }
-    ]
-  },
-  {
-    type: 'function',
-    name: 'getLatestOrderIdForTrader',
-    stateMutability: 'view',
-    inputs: [{ name: 'trader', type: 'address', internalType: 'address' }],
-    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }]
-  },
-  {
-    type: 'function',
-    name: 'getOrderCount',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }]
-  },
-  {
-    type: 'event',
-    name: 'OrderPlaced',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'orderId',
-        type: 'uint256',
-        indexed: true,
-        internalType: 'uint256'
-      },
-      {
-        name: 'owner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address'
-      },
-      {
-        name: 'isBuy',
-        type: 'bool',
-        indexed: false,
-        internalType: 'bool'
-      },
-      {
-        name: 'encryptedPrice',
-        type: 'bytes32',
-        indexed: false,
-        internalType: 'bytes32'
-      },
-      {
-        name: 'encryptedAmount',
-        type: 'bytes32',
-        indexed: false,
-        internalType: 'bytes32'
-      }
-    ]
-  },
-  {
-    type: 'event',
-    name: 'OrderMatched',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'orderId',
-        type: 'uint256',
-        indexed: true,
-        internalType: 'uint256'
-      },
-      {
-        name: 'encryptedExecutionPrice',
-        type: 'bytes32',
-        indexed: false,
-        internalType: 'bytes32'
-      },
-      {
-        name: 'encryptedFillStatus',
-        type: 'bytes32',
-        indexed: false,
-        internalType: 'bytes32'
-      },
-      {
-        name: 'timestamp',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256'
-      }
-    ]
-  }
-];
+import { parseAbi } from 'viem';
+
+export const shadowBookAbi = parseAbi([
+  'function placeOrder((uint256 ctHash,uint8 securityZone,uint8 utype,bytes signature) encryptedPrice, (uint256 ctHash,uint8 securityZone,uint8 utype,bytes signature) encryptedAmount, bool isBuy, uint256 escrowAmount) returns (uint256 orderId)',
+  'function cancelOrder(uint256 orderId)',
+  'function settleDirect(uint256 orderId)',
+  'function getOrderResult(uint256 orderId) view returns (bytes32 executionPrice, bytes32 filledAmount, bytes32 didFill, bool initialized)',
+  'function getOrderCiphertexts(uint256 orderId) view returns (bytes32 encryptedPrice, bytes32 encryptedAmount, bytes32 encryptedFilled, bytes32 encryptedCancelled, bool isBuy, address owner)',
+  'function getOrderView(uint256 orderId) view returns (bool isBuy, address owner, bool exists, uint256 placedAt, bool cancelled, bool fullyFilled, bool didFill, uint256 escrowRemaining, uint256 lastMatchTimestamp, uint256 lastExecutionPrice)',
+  'function getEscrowBalance(address trader) view returns (uint256 baseEscrowed, uint256 quoteEscrowed)',
+  'function getOrderDepth() view returns (uint256 buyCount, uint256 sellCount)',
+  'function getRecentMatches(uint256 count) view returns (uint256[] orderIds)',
+  'function getLatestOrderIdForTrader(address trader) view returns (uint256)',
+  'function getOrdersByTrader(address trader) view returns (uint256[])',
+  'function getOrderCount() view returns (uint256)',
+  'function totalVolumeEncrypted() view returns (uint256)',
+  'function orderEscrow(uint256) view returns (uint256)',
+  'function escrowedBase(address) view returns (uint256)',
+  'function escrowedQuote(address) view returns (uint256)',
+  'function baseToken() view returns (address)',
+  'function quoteToken() view returns (address)',
+  'event OrderPlaced(uint256 indexed orderId, address indexed trader, bool isBuy, uint256 timestamp)',
+  'event OrderCancelled(uint256 indexed orderId, address indexed trader)',
+  'event OrderMatched(uint256 indexed orderId, uint256 indexed counterOrderId, uint256 filledAmount, uint256 executionPrice)',
+  'event OrderRevealed(uint256 indexed orderId)',
+  'event EscrowDeposited(address indexed trader, bool isBase, uint256 amount)',
+  'event EscrowReleased(address indexed trader, bool isBase, uint256 amount)',
+]);

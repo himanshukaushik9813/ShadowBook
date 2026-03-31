@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NETWORK="${1:-sepolia}"
+NETWORK="${1:-fhenix_helium}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FRONTEND_DIR="$ROOT_DIR/frontend"
@@ -11,18 +11,19 @@ FRONTEND_ENV_FILE="$FRONTEND_DIR/.env.local"
 FRONTEND_ENV_EXAMPLE="$FRONTEND_DIR/.env.local.example"
 
 usage() {
-  cat <<'EOF'
+  cat <<'EOF_USAGE'
 Usage:
-  ./scripts/bootstrap-and-run.sh [sepolia|arb-sepolia]
+  ./scripts/bootstrap-and-run.sh [fhenix_helium]
 
 What it does:
   1) Installs root + frontend dependencies
   2) Ensures .env and frontend/.env.local exist (copies from examples if missing)
   3) Validates DEPLOYER_PRIVATE_KEY is set
-  4) Compiles + deploys contract to selected testnet
-  5) Prints deployment info
-  6) Starts Next.js frontend dev server
-EOF
+  4) Compiles + deploys contracts to Fhenix Helium
+  5) Optionally seeds the order book if SEED_WALLET_1 is set
+  6) Prints deployed contract addresses
+  7) Starts the Next.js frontend dev server
+EOF_USAGE
 }
 
 if [[ "$NETWORK" == "-h" || "$NETWORK" == "--help" ]]; then
@@ -30,7 +31,7 @@ if [[ "$NETWORK" == "-h" || "$NETWORK" == "--help" ]]; then
   exit 0
 fi
 
-if [[ "$NETWORK" != "sepolia" && "$NETWORK" != "arb-sepolia" ]]; then
+if [[ "$NETWORK" != "fhenix_helium" ]]; then
   echo "Unsupported network: $NETWORK"
   usage
   exit 1
@@ -65,12 +66,8 @@ if [[ -z "${DEPLOYER_PRIVATE_KEY:-}" ]]; then
   exit 1
 fi
 
-if [[ "$NETWORK" == "sepolia" && -z "${SEPOLIA_RPC_URL:-}" ]]; then
-  echo "Warning: SEPOLIA_RPC_URL is empty. Hardhat will use its default public RPC."
-fi
-
-if [[ "$NETWORK" == "arb-sepolia" && -z "${ARBITRUM_SEPOLIA_RPC_URL:-}" ]]; then
-  echo "Warning: ARBITRUM_SEPOLIA_RPC_URL is empty. Hardhat will use its default public RPC."
+if [[ -z "${FHENIX_RPC_URL:-}" ]]; then
+  echo "Warning: FHENIX_RPC_URL is empty. Hardhat will use https://api.helium.fhenix.zone"
 fi
 
 echo "==> Installing root dependencies"
@@ -82,12 +79,12 @@ npm --prefix frontend install
 echo "==> Compiling contracts"
 npm run compile
 
-if [[ "$NETWORK" == "sepolia" ]]; then
-  echo "==> Deploying to Sepolia"
-  npm run deploy:sepolia
-else
-  echo "==> Deploying to Arbitrum Sepolia"
-  npm run deploy:arb-sepolia
+echo "==> Deploying to Fhenix Helium"
+npm run deploy:helium
+
+if [[ -n "${SEED_WALLET_1:-}" ]]; then
+  echo "==> Seeding demo order book"
+  npm run seed:helium
 fi
 
 echo "==> Deployment file:"
@@ -95,4 +92,3 @@ cat "$FRONTEND_DIR/constants/deployment.json"
 
 echo "==> Starting frontend dev server on http://localhost:3000"
 npm run frontend:dev
-

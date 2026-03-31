@@ -2,12 +2,27 @@
 
 ShadowBook is a Web3 encrypted trading system built with CoFHE/FHE primitives, Solidity smart contracts, and a production-style Next.js frontend.
 
+## What this demo does
+ShadowBook is a privacy-preserving DEX prototype on Fhenix Helium.
+
+What is real:
+- Orders are encrypted in the browser using the Fhenix CoFHE public key
+- Encrypted values are stored and compared on-chain without decryption
+- Token escrow is real — ShadowUSDC and ShadowETH are locked on order placement and released on fill or cancellation
+- Settlement is real — ERC-20 transfers happen on-chain at match time
+- Only the order owner can decrypt their own execution results
+
+What is simulated:
+- ShadowUSDC and ShadowETH are testnet tokens with a public mint function
+- GhostFi credit scoring and ZK proofs are server-side simulations
+- The matching engine is O(n) with a depth cap — not production grade
+
 ## Proprietary Usage Warning
 This project is proprietary. Source code and product design are provided for authorized evaluation and approved collaboration only.
 
 - No unauthorized reuse, redistribution, or derivative commercialization.
 - No reverse engineering for competitive replication.
-- See [LICENSE](/Users/himanshukaushik/Desktop/notProject/shadowbook/LICENSE) for full terms.
+- See [LICENSE](./LICENSE) for full terms.
 
 ## What This Repository Contains
 - Encrypted orderflow smart contract (`contracts/ShadowBook.sol`)
@@ -57,9 +72,13 @@ npm run compile
 Deploy:
 
 ```bash
-npm run deploy:sepolia
-# or
-npm run deploy:arb-sepolia
+npm run deploy:helium
+```
+
+Seed the book with demo orders:
+
+```bash
+npm run seed:helium
 ```
 
 Run frontend:
@@ -74,7 +93,8 @@ npm run frontend:dev
 3. Run local verification:
    - `npm run compile`
    - `npm --prefix frontend run build`
-4. Review [SECURITY.md](/Users/himanshukaushik/Desktop/notProject/shadowbook/SECURITY.md) before pushing.
+   - `npm run deploy:helium`
+4. Review [SECURITY.md](./SECURITY.md) before pushing.
 
 ## Note on Intellectual Property
 Implementation is documented for maintainability and review, but this repository is not released as open-source software.

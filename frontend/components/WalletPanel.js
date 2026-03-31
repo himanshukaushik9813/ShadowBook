@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAccount, useChainId, useConnect, useDisconnect, useSwitchChain } from 'wagmi';
-import { arbitrumSepolia, sepolia } from 'wagmi/chains';
 
-function shorten(address) {
-  if (!address) return '';
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
+import { fhenixHeliumChain, networkLabel, shortenAddress } from '../constants/network';
 
 function MetamaskIcon() {
   return (
@@ -56,12 +52,6 @@ export default function WalletPanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState('metamask');
 
-  const networkName = useMemo(() => {
-    if (chainId === sepolia.id) return 'Sepolia';
-    if (chainId === arbitrumSepolia.id) return 'Arbitrum Sepolia';
-    return 'Unsupported network';
-  }, [chainId]);
-
   const injectedConnector = useMemo(
     () =>
       connectors.find(
@@ -72,6 +62,7 @@ export default function WalletPanel() {
       ) || null,
     [connectors]
   );
+
   const walletConnectConnector = useMemo(
     () =>
       connectors.find(
@@ -85,14 +76,14 @@ export default function WalletPanel() {
       {
         key: 'metamask',
         title: 'MetaMask',
-        subtitle: 'Secure encrypted connection',
+        subtitle: 'Browser wallet for Helium testnet',
         connector: injectedConnector,
         icon: <MetamaskIcon />,
       },
       {
         key: 'walletconnect',
         title: 'WalletConnect',
-        subtitle: 'Secure encrypted connection',
+        subtitle: 'QR connection for external wallets',
         connector: walletConnectConnector,
         icon: <WalletConnectIcon />,
       },
@@ -126,56 +117,49 @@ export default function WalletPanel() {
 
   return (
     <>
-      <section id="wallet-panel" className="sb-card h-full">
-        <div>
+      <section id="wallet-panel" className="sb-card-secondary h-full">
+        <div className="space-y-2">
           <p className="sb-eyebrow">Wallet</p>
-          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
+          <h3 className="text-xl font-semibold text-white">
             Connection
           </h3>
-          <p className="sb-muted mt-2">Connect a wallet before submitting an encrypted order.</p>
+          <p className="sb-muted">Connect a wallet before submitting an encrypted order.</p>
         </div>
 
         {isConnected ? (
           <div className="mt-6 space-y-4">
-            <div className="rounded-2xl border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] p-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
               <div className="flex items-center gap-3">
-                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#ffb36b]" />
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#66d17e] shadow-[0_0_12px_rgba(102,209,126,0.4)]" />
                 <div>
-                  <p className="text-sm font-semibold text-[#ffe0c2]">Connected securely</p>
-                  <p className="font-mono text-xs text-slate-300">{shorten(address)}</p>
+                  <p className="text-sm font-medium text-white">Connected securely</p>
+                  <p className="font-mono text-xs text-white/60">{shortenAddress(address)}</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/8 bg-[rgba(8,7,6,0.42)] p-4">
-              <p className="text-xs font-medium text-slate-500">Network</p>
-              <p className="mt-2 text-sm font-medium text-slate-100">
-                {networkName}
-                {' '}
-                <span className="font-mono text-slate-300">({chainId})</span>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-white/50">Network</p>
+              <p className="mt-2 text-sm font-medium text-white">
+                {networkLabel(chainId)}{' '}
+                <span className="font-mono text-white/60">({chainId || '--'})</span>
               </p>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                className="sb-button-ghost"
-                onClick={() => switchChain({ chainId: sepolia.id })}
-                disabled={isSwitching || chainId === sepolia.id}
-              >
-                Switch to Sepolia
-              </button>
-              <button
-                type="button"
-                className="sb-button-ghost"
-                onClick={() => switchChain({ chainId: arbitrumSepolia.id })}
-                disabled={isSwitching || chainId === arbitrumSepolia.id}
-              >
-                Switch to Arbitrum
-              </button>
-            </div>
+            <button
+              type="button"
+              className="sb-button-ghost w-full"
+              onClick={() => switchChain({ chainId: fhenixHeliumChain.id })}
+              disabled={isSwitching || chainId === fhenixHeliumChain.id}
+            >
+              {chainId === fhenixHeliumChain.id ? 'Connected to Helium' : 'Switch to Fhenix Helium'}
+            </button>
 
-            <button type="button" className="sb-button-ghost w-full border-rose-300/30 text-rose-100" onClick={() => disconnect()}>
+            <button
+              type="button"
+              className="sb-button-ghost w-full border-rose-300/30 text-rose-100"
+              onClick={() => disconnect()}
+            >
               Disconnect
             </button>
           </div>
@@ -184,7 +168,7 @@ export default function WalletPanel() {
             <button type="button" className="sb-button-primary w-full" onClick={() => setIsModalOpen(true)}>
               Connect Wallet
             </button>
-            <p className="rounded-full border border-white/8 bg-white/[0.02] px-3 py-1.5 text-center text-xs text-slate-400">
+            <p className="rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2 text-center text-xs text-white/60">
               Encrypted session
             </p>
             {!injectedConnector ? (
@@ -194,10 +178,8 @@ export default function WalletPanel() {
             ) : null}
             {!walletConnectConnector ? (
               <p className="sb-muted">
-                WalletConnect disabled. Add
-                {' '}
-                <code className="font-mono text-xs">NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID</code>
-                {' '}
+                WalletConnect is disabled. Add{' '}
+                <code className="font-mono text-xs">NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID</code>{' '}
                 to enable QR connections.
               </p>
             ) : null}
@@ -231,11 +213,11 @@ export default function WalletPanel() {
                   <h3 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white">
                     Connect wallet
                   </h3>
-                  <p className="sb-muted mt-2">Choose a wallet to start a private trading session.</p>
+                  <p className="sb-muted mt-2">Choose a wallet to start a private Helium session.</p>
                 </div>
                 <button
                   type="button"
-                  className="h-9 w-9 rounded-xl border border-white/15 text-lg text-slate-300 transition hover:border-white/30 hover:text-white"
+                  className="h-9 w-9 rounded-xl border border-white/15 text-lg text-white/70 transition hover:border-white/30 hover:text-white"
                   onClick={() => setIsModalOpen(false)}
                 >
                   ×
@@ -256,15 +238,15 @@ export default function WalletPanel() {
                           ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08]'
                           : 'border-white/10 bg-white/[0.02] hover:border-white/16'
                       } ${!isAvailable ? 'cursor-not-allowed opacity-45' : ''}`}
-                      whileHover={isAvailable ? { scale: 1.01, y: -1 } : {}}
-                      whileTap={isAvailable ? { scale: 0.99 } : {}}
+                      whileHover={isAvailable ? { scale: 1.01, y: -1 } : undefined}
+                      whileTap={isAvailable ? { scale: 0.99 } : undefined}
                       onClick={() => setSelectedWallet(wallet.key)}
                     >
                       <div className="flex items-center gap-3">
                         <div className="rounded-xl border border-white/10 bg-white/5 p-2">{wallet.icon}</div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-100">{wallet.title}</p>
-                          <p className="text-xs text-slate-400">{wallet.subtitle}</p>
+                          <p className="text-sm font-semibold text-white">{wallet.title}</p>
+                          <p className="text-xs text-white/60">{wallet.subtitle}</p>
                         </div>
                       </div>
                       {isSelected ? (
@@ -279,7 +261,7 @@ export default function WalletPanel() {
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                 <span className="rounded-full border border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08] px-3 py-1.5 text-xs font-medium text-[#ffe0c2]">
-                  🔒 End-to-End Encrypted
+                  Encrypted Helium session
                 </span>
                 <button
                   type="button"

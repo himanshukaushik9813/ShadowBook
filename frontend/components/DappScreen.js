@@ -2,16 +2,19 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAccount, useChainId } from 'wagmi';
-import { arbitrumSepolia, sepolia } from 'wagmi/chains';
 
 import { IS_DEPLOYED, SHADOWBOOK_ADDRESS } from '../constants/config';
+import { networkLabel, shortenAddress } from '../constants/network';
 import BrandSignature from './BrandSignature';
 import CofheBridge from './CofheBridge';
+import FaucetPanel from './FaucetPanel';
 import FlowPipeline from './FlowPipeline';
 import InstitutionModePanel from './InstitutionModePanel';
+import OrderBookPanel from './OrderBookPanel';
 import OrderForm from './OrderForm';
 import ShadowAI from './ShadowAI';
 import ShadowInsightPanel from './ShadowInsightPanel';
+import TradeHistoryPanel from './TradeHistoryPanel';
 import VerifiableExecutionProofPanel from './VerifiableExecutionProofPanel';
 import WalletPanel from './WalletPanel';
 
@@ -26,6 +29,8 @@ function createInitialFlowState() {
   return {
     plaintext: null,
     encrypted: null,
+    submitted: null,
+    order: null,
     matched: null,
     decrypted: null,
     tx: {
@@ -33,16 +38,18 @@ function createInitialFlowState() {
       status: 'idle',
       chainId: null,
       explorerUrl: '',
+      blockNumber: null,
     },
     pipeline: {
-      currentStage: 'idle',
+      currentStage: 'plaintext',
       progress: 0,
       statusMessage: 'Awaiting input',
       error: '',
       stages: {
         plaintext: { state: 'idle', label: 'Awaiting input' },
         encrypted: { state: 'idle', label: 'Awaiting input' },
-        matched: { state: 'idle', label: 'Awaiting input' },
+        submitted: { state: 'idle', label: 'Awaiting input' },
+        matching: { state: 'idle', label: 'Awaiting input' },
         decrypted: { state: 'idle', label: 'Awaiting input' },
       },
     },
@@ -52,17 +59,6 @@ function createInitialFlowState() {
       lastReplayAt: 0,
     },
   };
-}
-
-function networkLabel(chainId) {
-  if (chainId === sepolia.id) return 'Sepolia';
-  if (chainId === arbitrumSepolia.id) return 'Arbitrum Sepolia';
-  return 'Unsupported';
-}
-
-function shorten(address) {
-  if (!address) return '';
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
 function NavIcon({ name, active }) {
@@ -167,54 +163,6 @@ function MobileAppBar({ onOpenMenu }) {
   );
 }
 
-function AppTopNavLink({ href, children }) {
-  const external = href.startsWith('http');
-  const classes =
-    'inline-flex items-center rounded-full border border-transparent px-3 py-2 text-sm text-[#b7aea5] transition-all duration-200 hover:border-white/8 hover:bg-white/[0.04] hover:text-white';
-
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noreferrer" className={classes}>
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={href} className={classes}>
-      {children}
-    </Link>
-  );
-}
-
-function AppTopNavbar() {
-  return (
-    <div className="sticky top-4 z-[34] mb-5 hidden md:block">
-      <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(20,15,13,0.9),rgba(13,10,9,0.86))] px-5 py-3 shadow-[0_20px_48px_rgba(0,0,0,0.28)] backdrop-blur-[14px]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,179,107,0.06),rgba(255,255,255,0.01)_30%,transparent_62%)]" />
-        <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/26 to-transparent" />
-
-        <div className="relative flex flex-wrap items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-3 md:gap-4">
-            <BrandSignature href="/" subtitle="Private execution" compact tone="warm" />
-            <div className="hidden h-6 w-px bg-white/8 md:block" />
-            <nav className="flex flex-wrap items-center gap-1.5">
-              <AppTopNavLink href="/">Home</AppTopNavLink>
-              <AppTopNavLink href="https://github.com/himanshukaushik9813/ShadowBook">Docs</AppTopNavLink>
-              <AppTopNavLink href="https://github.com/himanshukaushik9813/ShadowBook">GitHub</AppTopNavLink>
-            </nav>
-          </div>
-
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-[#8f7f71]">
-            <span className="inline-flex h-2 w-2 rounded-full bg-[#ffb36b]" />
-            App workspace
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SidebarContent({ activeSection, onChange, onClose }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -232,7 +180,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white lg:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#d4cbc2] transition-colors duration-200 hover:border-[#ffb36b]/18 hover:text-white md:hidden"
             aria-label="Close navigation"
           >
             <CloseIcon />
@@ -274,10 +222,10 @@ function SidebarContent({ activeSection, onChange, onClose }) {
             {isConnected ? 'Wallet connected' : 'Wallet not connected'}
           </p>
           <p className="font-mono text-xs text-[#8e877e]">
-            {isConnected ? shorten(address) : 'Awaiting session'}
+            {isConnected ? shortenAddress(address) : 'Awaiting session'}
           </p>
           <p className="text-xs text-[#8e877e]">
-            {isConnected ? networkLabel(chainId) : 'Sepolia / Arbitrum Sepolia'}
+            {isConnected ? networkLabel(chainId) : 'Fhenix Helium'}
           </p>
         </div>
         <div className="mt-4 border-t border-white/8 pt-3 text-[11px] text-[#6f6a64]">
@@ -290,7 +238,7 @@ function SidebarContent({ activeSection, onChange, onClose }) {
 
 function AppSidebar({ activeSection, onChange }) {
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/10 bg-[#070606] shadow-[20px_0_60px_rgba(0,0,0,0.28)]">
+    <aside className="hidden md:flex fixed left-0 top-0 z-40 h-screen w-[260px] flex-col border-r border-white/10 bg-[#070606] shadow-[20px_0_60px_rgba(0,0,0,0.28)]">
       <SidebarContent activeSection={activeSection} onChange={onChange} />
     </aside>
   );
@@ -396,7 +344,7 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
                   >
                     <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#66d17e] shadow-[0_0_10px_rgba(102,209,126,0.42)]" />
                     <span>Connected</span>
-                    <span className="font-mono text-xs text-[#bcb3aa]">{shorten(address)}</span>
+                    <span className="font-mono text-xs text-[#bcb3aa]">{shortenAddress(address)}</span>
                   </button>
                 ) : (
                   <button
@@ -418,14 +366,15 @@ function DashboardHeader({ activeSection, institutionMode, onConnectWallet }) {
 
 function StatusChecklist({ flowState }) {
   const stages = [
-    { key: 'plaintext', label: 'Client-side encryption', helper: 'Input captured in the browser' },
-    { key: 'encrypted', label: 'Payload packaging', helper: 'Encrypted payload prepared' },
-    { key: 'matched', label: 'Private relay submission', helper: 'Matching and settlement processing' },
-    { key: 'decrypted', label: 'Settlement finalization', helper: 'Result available to the user' },
+    { key: 'plaintext', label: 'Plaintext capture', helper: 'Order intent authored locally' },
+    { key: 'encrypted', label: 'Ciphertext sealed', helper: 'CoFHE payload created in browser' },
+    { key: 'submitted', label: 'Escrow posted', helper: 'Real ERC-20 collateral locked on-chain' },
+    { key: 'matching', label: 'Private routing', helper: 'Searching or resting in the encrypted book' },
+    { key: 'decrypted', label: 'Owner reveal', helper: 'Execution result decrypted only for you' },
   ];
 
   return (
-    <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+    <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-5">
       {stages.map((stage) => {
         const status = flowState?.pipeline?.stages?.[stage.key]?.state || 'idle';
         const completed = status === 'completed';
@@ -464,12 +413,20 @@ function StatusChecklist({ flowState }) {
   );
 }
 
-function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected }) {
+function TradeWorkspace({
+  flowState,
+  onFlowUpdate,
+  onSystemEvent,
+  isConnected,
+  assistantAction,
+  systemLogs,
+  institutionMode,
+}) {
   const { address } = useAccount();
   const chainId = useChainId();
 
   return (
-    <section className="space-y-5 md:space-y-6">
+    <section className="space-y-5">
       <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.84),rgba(11,9,8,0.8))] p-5 shadow-[0_20px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl md:p-6">
         <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
         <div className="absolute left-[-18px] top-8 h-20 w-20 rounded-full bg-[#ff8a3c]/[0.06] blur-[70px]" />
@@ -498,38 +455,56 @@ function TradeWorkspace({ flowState, onFlowUpdate, onSystemEvent, isConnected })
             </span>
             <span className="sb-status-pill">
               Wallet{' '}
-              <span className="font-mono text-slate-300">{address ? shorten(address) : 'Not connected'}</span>
+              <span className="font-mono text-slate-300">{address ? shortenAddress(address) : 'Not connected'}</span>
             </span>
           </div>
         </div>
       </div>
 
-      {isConnected ? (
-        <>
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.98fr)_minmax(0,1.02fr)]">
-            <CofheBridge>
-              <OrderForm onFlowUpdate={onFlowUpdate} onSystemEvent={onSystemEvent} />
-            </CofheBridge>
-            <FlowPipeline flowState={flowState} />
-          </div>
-          <StatusChecklist flowState={flowState} />
-        </>
-      ) : (
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12 xl:items-start">
+        <div className="min-w-0 space-y-5 xl:col-span-3">
           <WalletPanel />
-          <div className="sb-card">
-            <p className="sb-eyebrow">Next</p>
-            <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
-              Connect a wallet to begin
-            </h3>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
-              After connection, this page becomes the execution workspace. Proofs and assistant stay separate so the interface remains readable.
-            </p>
-          </div>
+          <FaucetPanel />
+          <OrderBookPanel />
         </div>
-      )}
 
-      <ShadowInsightPanel />
+        <div className="min-w-0 space-y-5 xl:col-span-6">
+          {isConnected ? (
+            <>
+              <OrderForm onFlowUpdate={onFlowUpdate} onSystemEvent={onSystemEvent} />
+              <FlowPipeline flowState={flowState} />
+              <StatusChecklist flowState={flowState} />
+              <VerifiableExecutionProofPanel flowState={flowState} />
+            </>
+          ) : (
+            <>
+              <div className="sb-card">
+                <p className="sb-eyebrow">Next</p>
+                <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
+                  Connect a wallet to begin
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  Once connected, this center column becomes the live trading terminal with real escrow, encrypted matching, and proof-backed settlement.
+                </p>
+              </div>
+              <FlowPipeline flowState={flowState} />
+              <VerifiableExecutionProofPanel flowState={flowState} />
+            </>
+          )}
+        </div>
+
+        <div className="min-w-0 space-y-5 xl:col-span-3">
+          <TradeHistoryPanel />
+          <ShadowInsightPanel />
+          <ShadowAI
+            embedded
+            actionText={assistantAction}
+            logs={systemLogs}
+            institutionMode={institutionMode}
+            flowState={flowState}
+          />
+        </div>
+      </div>
     </section>
   );
 }
@@ -539,7 +514,7 @@ function ProofWorkspace({ flowState }) {
   const chainId = useChainId();
 
   return (
-    <section className="relative space-y-8 overflow-hidden rounded-[40px] px-1 py-1">
+    <section className="relative space-y-8 overflow-hidden rounded-[40px]">
       <motion.div
         className="pointer-events-none absolute left-[-8%] top-4 h-[320px] w-[320px] rounded-full bg-[#ff8a3c]/[0.12] blur-[120px]"
         animate={{ opacity: [0.5, 0.72, 0.5], scale: [1, 1.06, 1] }}
@@ -565,7 +540,7 @@ function ProofWorkspace({ flowState }) {
       <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_180px_rgba(0,0,0,0.5)]" />
 
       <motion.div
-        className="relative overflow-hidden rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.9),rgba(11,9,8,0.84))] p-7 shadow-[0_24px_70px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-8"
+        className="relative w-full overflow-hidden rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(18,14,11,0.9),rgba(11,9,8,0.84))] shadow-[0_24px_70px_rgba(0,0,0,0.3)] backdrop-blur-xl"
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.42 }}
@@ -575,37 +550,37 @@ function ProofWorkspace({ flowState }) {
         <div className="absolute right-10 top-10 h-28 w-28 rounded-full bg-[#f59e0b]/[0.06] blur-[82px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_36%)]" />
 
-        <div className="relative flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-2xl">
+        <div className="relative z-[2] flex w-full flex-col items-start gap-4 px-6 py-7 text-left md:px-10 md:py-8">
+          <div className="w-full space-y-4">
             <p className="sb-eyebrow">Proofs</p>
-            <h2 className="mt-3 font-display text-4xl font-semibold tracking-[-0.045em] text-white md:text-5xl">
+            <h2 className="font-display text-4xl font-semibold tracking-[-0.045em] text-white md:text-5xl">
               Execution proof
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">
+            <p className="text-sm leading-relaxed text-slate-400 md:text-base">
               Review settlement state, verification steps, and proof-backed execution records inside a dedicated ShadowBook proof workspace.
             </p>
-          </div>
 
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="sb-status-pill">
-              Contract
-              {' '}
-              <span className="font-mono text-slate-300">
-                {IS_DEPLOYED
-                  ? `${SHADOWBOOK_ADDRESS.slice(0, 6)}...${SHADOWBOOK_ADDRESS.slice(-4)}`
-                  : 'Not deployed'}
+            <div className="flex flex-wrap gap-3 text-xs">
+              <span className="sb-status-pill">
+                Contract
+                {' '}
+                <span className="font-mono text-slate-300">
+                  {IS_DEPLOYED
+                    ? `${SHADOWBOOK_ADDRESS.slice(0, 6)}...${SHADOWBOOK_ADDRESS.slice(-4)}`
+                    : 'Not deployed'}
+                </span>
               </span>
-            </span>
-            <span className="sb-status-pill">
-              Network
-              {' '}
-              <span className="text-slate-300">{networkLabel(chainId)}</span>
-            </span>
-            <span className="sb-status-pill">
-              Wallet
-              {' '}
-              <span className="font-mono text-slate-300">{address ? shorten(address) : 'Not connected'}</span>
-            </span>
+              <span className="sb-status-pill">
+                Network
+                {' '}
+                <span className="text-slate-300">{networkLabel(chainId)}</span>
+              </span>
+              <span className="sb-status-pill">
+                Wallet
+                {' '}
+                <span className="font-mono text-slate-300">{address ? shortenAddress(address) : 'Not connected'}</span>
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -796,6 +771,9 @@ function Dashboard() {
         onFlowUpdate={setFlowState}
         onSystemEvent={handleSystemEvent}
         isConnected={isConnected}
+        assistantAction={assistantAction}
+        systemLogs={systemLogs}
+        institutionMode={institutionMode}
       />
     );
   }, [
@@ -808,7 +786,7 @@ function Dashboard() {
   ]);
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-[#050505] text-white">
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       <motion.div
         className="absolute left-[-10%] top-[4%] h-[360px] w-[360px] rounded-full bg-[#ff8a3c]/[0.11] blur-[140px]"
@@ -849,25 +827,24 @@ function Dashboard() {
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <main className="min-h-screen min-w-0 ml-[260px]">
-        <div className="mx-auto w-full max-w-[1560px] px-4 py-5 md:px-6 lg:px-8 xl:px-10">
+      <main className="min-h-screen min-w-0 md:ml-[260px]">
+        <div className="w-full px-4 py-4 md:px-6 md:py-5 lg:px-8">
           <div className="relative z-[2] min-h-screen min-w-0">
             <MobileAppBar onOpenMenu={() => setMobileSidebarOpen(true)} />
-            <AppTopNavbar />
             <DashboardHeader
               activeSection={activeSection}
               institutionMode={institutionMode}
               onConnectWallet={handleOpenWallet}
             />
 
-            <div className="pb-14">
+            <div className="pb-8">
               <motion.div
                 key={activeSection}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25 }}
               >
-                {sectionContent}
+                <CofheBridge>{sectionContent}</CofheBridge>
               </motion.div>
             </div>
           </div>

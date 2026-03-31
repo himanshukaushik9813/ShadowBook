@@ -14,8 +14,8 @@
   body {
     @apply font-body text-sb-text antialiased;
     background:
-      radial-gradient(circle at top, rgba(255, 138, 60, 0.08), transparent 28%),
-      linear-gradient(180deg, #060606 0%, #090807 100%);
+      radial-gradient(circle at top, rgba(255, 138, 60, 0.05), transparent 24%),
+      linear-gradient(180deg, #050505 0%, #070606 100%);
   }
 }
 
@@ -38,20 +38,32 @@
     @apply sb-glass p-6 transition-all duration-300;
   }
 
+  .sb-card-primary {
+    @apply rounded-2xl border border-white/10 bg-white/[0.02] p-6;
+  }
+
+  .sb-card-secondary {
+    @apply rounded-2xl border border-white/10 bg-white/[0.02] p-6;
+  }
+
+  .sb-card-tertiary {
+    @apply rounded-2xl border border-white/10 bg-white/[0.02] p-5;
+  }
+
   .sb-heading-xl {
     @apply font-display text-5xl font-bold tracking-[-0.03em] md:text-7xl;
   }
 
   .sb-heading-lg {
-    @apply font-display text-2xl font-semibold tracking-[-0.02em] md:text-3xl;
+    @apply text-xl font-semibold;
   }
 
   .sb-eyebrow {
-    @apply text-xs font-medium tracking-[0.08em] text-[#a99684];
+    @apply text-xs font-medium uppercase tracking-[0.14em] text-white/50;
   }
 
   .sb-muted {
-    @apply text-sm leading-relaxed text-sb-muted;
+    @apply text-sm leading-relaxed text-white/70;
   }
 
   .sb-button-primary {
@@ -99,13 +111,7 @@
   }
 
   .sb-panel-soft {
-    @apply rounded-[28px] border;
-    border-color: rgba(255, 255, 255, 0.08);
-    background:
-      linear-gradient(180deg, rgba(18, 14, 11, 0.84), rgba(12, 10, 9, 0.82));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 18px 48px rgba(0, 0, 0, 0.28);
+    @apply rounded-2xl border border-white/10 bg-white/[0.02];
   }
 
   .sb-status-pill {

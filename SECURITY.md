@@ -6,11 +6,11 @@
 
 ## Required secret handling
 - Keep secrets only in local environment files:
-  - `/Users/himanshukaushik/Desktop/notProject/shadowbook/.env`
-  - `/Users/himanshukaushik/Desktop/notProject/shadowbook/frontend/.env.local`
+  - `./.env`
+  - `./frontend/.env.local`
 - Commit only example templates:
-  - `/Users/himanshukaushik/Desktop/notProject/shadowbook/.env.example`
-  - `/Users/himanshukaushik/Desktop/notProject/shadowbook/frontend/.env.local.example`
+  - `./.env.example`
+  - `./frontend/.env.local.example`
 
 ## Pre-publish checklist
 1. Verify `.env` and `.env.local` are empty of real keys.

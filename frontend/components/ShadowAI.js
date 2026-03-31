@@ -106,13 +106,13 @@ function ConsoleBody({
   markInteraction,
 }) {
   return (
-    <div className="space-y-3 px-4 py-4" onMouseMove={markInteraction}>
-      <div className="rounded-xl border border-[#ffb36b]/16 bg-[rgba(18,14,11,0.68)] px-3 py-2">
-        <p className="text-sm text-[#ffe0c2]">{actionText || 'Monitoring private execution...'}</p>
+    <div className="space-y-4 px-5 py-5" onMouseMove={markInteraction}>
+      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+        <span className="text-[#ffe0c2]">{actionText || 'Monitoring private execution...'}</span>
         {institutionMode ? (
-          <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-[#ffcf9a]">
-            Institution Grade Privacy Active
-          </p>
+          <span className="rounded-full border border-[#ffb36b]/16 bg-[#ff8a3c]/[0.08] px-2.5 py-1 text-[11px] uppercase tracking-[0.16em] text-[#ffcf9a]">
+            Institution mode
+          </span>
         ) : null}
       </div>
 
@@ -132,7 +132,7 @@ function ConsoleBody({
 
       <div
         ref={threadRef}
-        className="max-h-72 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-[rgba(8,7,6,0.48)] p-2.5"
+        className="max-h-80 space-y-2 overflow-y-auto rounded-xl border border-white/10 bg-[rgba(8,7,6,0.42)] p-3"
       >
         {messages.map((message) => (
           <div
@@ -195,16 +195,19 @@ function ConsoleBody({
         </button>
       </form>
 
-      <div className="max-h-28 space-y-1 overflow-y-auto rounded-lg border border-white/10 bg-[rgba(8,7,6,0.42)] p-2">
-        {latestLogs.map((log) => (
-          <p
-            key={`${log.timestamp}-${log.message}`}
-            className="grid grid-cols-[70px_1fr] gap-2 text-[11px] text-slate-300"
-          >
-            <span className="font-mono text-slate-500">{formatTime(log.timestamp)}</span>
-            <span>{log.message}</span>
-          </p>
-        ))}
+      <div className="border-t border-white/8 pt-3">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Recent system notes</p>
+        <div className="mt-2 max-h-24 space-y-1 overflow-y-auto">
+          {latestLogs.map((log) => (
+            <p
+              key={`${log.timestamp}-${log.message}`}
+              className="grid grid-cols-[66px_1fr] gap-2 text-[11px] text-slate-300"
+            >
+              <span className="font-mono text-slate-500">{formatTime(log.timestamp)}</span>
+              <span>{log.message}</span>
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -357,15 +360,15 @@ export default function ShadowAI({
 
   if (embedded) {
     return (
-      <section className="sb-card relative overflow-hidden">
-        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/25 to-transparent" />
-        <div className="flex items-center gap-3 border-b border-white/10 px-1 pb-4">
+      <section className="sb-card-secondary relative overflow-hidden">
+        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb36b]/20 to-transparent" />
+        <div className="flex items-center gap-3 border-b border-white/8 px-5 pb-4 pt-5">
           <div className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.02] shadow-[0_0_26px_rgba(255,138,60,0.08)]">
             <span className="h-2.5 w-2.5 rounded-full bg-[#ffb36b]" />
           </div>
           <div>
             <p className="sb-eyebrow text-[10px]">Shadow AI</p>
-            <p className="text-sm font-semibold text-slate-100">Command Console</p>
+            <p className="text-sm font-semibold text-slate-100">Command console</p>
           </div>
         </div>
         {body}

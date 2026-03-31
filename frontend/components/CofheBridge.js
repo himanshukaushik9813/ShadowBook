@@ -1,11 +1,14 @@
+'use client';
+
 import { useMemo } from 'react';
 import {
   CofheProvider,
   createCofheConfig,
   useCofheAutoConnect,
 } from '@cofhe/react';
-import { arbSepolia as cofheArbSepolia, sepolia as cofheSepolia } from '@cofhe/sdk/chains';
 import { usePublicClient, useWalletClient } from 'wagmi';
+
+import { cofheHeliumChain } from '../constants/network';
 
 function CofheAutoConnector({ walletClient, publicClient }) {
   useCofheAutoConnect({ walletClient, publicClient });
@@ -19,7 +22,7 @@ export default function CofheBridge({ children }) {
   const cofheConfig = useMemo(
     () =>
       createCofheConfig({
-        supportedChains: [cofheSepolia, cofheArbSepolia],
+        supportedChains: [cofheHeliumChain],
         defaultPermitExpiration: 60 * 60 * 24 * 7,
       }),
     []

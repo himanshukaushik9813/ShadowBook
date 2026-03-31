@@ -8,8 +8,8 @@
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "clean:repo": "npm run clean && rm -rf frontend/.next",
-    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
-    "deploy:arb-sepolia": "hardhat run scripts/deploy.js --network arbitrumSepolia",
+    "deploy:helium": "hardhat run scripts/deploy.js --network fhenix_helium",
+    "seed:helium": "hardhat run scripts/seed.js --network fhenix_helium",
     "frontend:dev": "npm --prefix frontend run dev",
     "frontend:build": "npm --prefix frontend run build",
     "frontend:start": "npm --prefix frontend run start"

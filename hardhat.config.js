@@ -3,6 +3,7 @@ require('dotenv').config();
 
 const privateKey = process.env.DEPLOYER_PRIVATE_KEY || process.env.PRIVATE_KEY;
 const accounts = privateKey ? [privateKey] : [];
+const heliumRpcUrl = process.env.FHENIX_RPC_URL || 'https://api.helium.fhenix.zone';
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -24,16 +25,9 @@ module.exports = {
   },
   networks: {
     hardhat: {},
-    sepolia: {
-      url: process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia.publicnode.com',
-      chainId: 11155111,
-      accounts,
-    },
-    arbitrumSepolia: {
-      url:
-        process.env.ARBITRUM_SEPOLIA_RPC_URL ||
-        'https://arbitrum-sepolia.publicnode.com',
-      chainId: 421614,
+    fhenix_helium: {
+      url: heliumRpcUrl,
+      chainId: 8008135,
       accounts,
     },
   },

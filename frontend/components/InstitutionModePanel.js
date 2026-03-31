@@ -139,14 +139,14 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
   }
 
   return (
-    <section className="sb-card">
-      <div className="relative flex items-start justify-between gap-3">
+    <section className="sb-card-secondary space-y-4">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <p className="sb-eyebrow">Auditor Access</p>
-          <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em] text-white">
+          <h3 className="mt-2 text-xl font-semibold text-white">
             Controlled disclosure
           </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70">
             Generate a proof package with limited disclosure when external review is required.
           </p>
         </div>
@@ -156,8 +156,8 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
             type="button"
             className={`relative h-8 w-[62px] rounded-full border p-1 transition-all ${
               enabled
-                ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.1] shadow-[0_0_24px_rgba(255,138,60,0.1)]'
-                : 'border-white/10 bg-white/[0.03]'
+                ? 'border-white/10 bg-white/[0.04]'
+                : 'border-white/10 bg-white/[0.02]'
             }`}
             onClick={() => onToggle(!enabled)}
             aria-pressed={enabled}
@@ -168,7 +168,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
               transition={{ type: 'spring', stiffness: 380, damping: 24 }}
             />
           </button>
-          <span className={`text-xs ${enabled ? 'text-[#ffe0c2]' : 'text-slate-500'}`}>
+          <span className={`text-xs ${enabled ? 'text-[#ffe0c2]' : 'text-white/50'}`}>
             {enabled ? 'Enabled' : 'Disabled'}
           </span>
         </div>
@@ -181,7 +181,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
           </p>
 
           <div className="grid gap-2">
-            <label className="text-xs font-medium text-slate-500" htmlFor="proof-threshold">
+            <label className="text-xs font-medium uppercase tracking-[0.14em] text-white/50" htmlFor="proof-threshold">
               Proof threshold
             </label>
             <input
@@ -201,8 +201,8 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
                 key={field.key}
                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm ${
                   selectedFields[field.key]
-                    ? 'border-[#ffb36b]/18 bg-[#ff8a3c]/[0.08] text-[#ffe0c2]'
-                    : 'border-white/10 bg-[rgba(8,7,6,0.42)] text-slate-200'
+                    ? 'border-white/10 bg-white/[0.04] text-white'
+                    : 'border-white/10 bg-white/[0.02] text-white/70'
                 }`}
               >
                 <input
@@ -243,8 +243,8 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
           </div>
 
           {latestProof ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/8 bg-[rgba(8,7,6,0.42)] px-3 py-2">
-              <p className="font-mono text-xs text-slate-200">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2">
+              <p className="font-mono text-xs text-white/70">
                 Latest proof:
                 {' '}
                 {latestProof.id}
@@ -269,7 +269,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
           ) : null}
 
           {verification ? (
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-white/70">
               Verification:
               {' '}
               {verification.status}
@@ -281,7 +281,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
           ) : null}
 
           {loanDecision ? (
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-white/70">
               Loan Decision:
               {' '}
               {loanDecision.status}
@@ -299,7 +299,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
               {proofHistory.map((proof) => (
                 <li
                   key={proof.id}
-                  className="grid grid-cols-2 gap-2 rounded-xl border border-white/8 bg-[rgba(8,7,6,0.42)] px-3 py-2 text-xs text-slate-300 sm:grid-cols-4"
+                  className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-white/70 sm:grid-cols-4"
                 >
                   <span className="font-mono">{proof.id}</span>
                   <span>{proof.type}</span>
@@ -309,7 +309,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-slate-400">No proofs generated yet.</p>
+            <p className="text-sm text-white/70">No proofs generated yet.</p>
           )}
 
           {error ? (
@@ -319,7 +319,7 @@ export default function InstitutionModePanel({ enabled, onToggle, onRevealToAudi
           ) : null}
         </div>
       ) : (
-        <p className="mt-4 text-sm text-slate-400">
+        <p className="mt-4 text-sm text-white/70">
           Enable auditor access to allow limited disclosure when required.
         </p>
       )}

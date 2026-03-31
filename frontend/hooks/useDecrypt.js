@@ -1,10 +1,15 @@
 import { useCallback, useState } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount, useChainId, usePublicClient } from 'wagmi';
 import { useCofheClient } from '@cofhe/react';
 import { FheTypes } from '@cofhe/sdk';
 
+import { SCALING_FACTOR } from '../constants/config';
+import { useShadowBook } from './useShadowBook';
+
 export function useDecrypt() {
   const client = useCofheClient();
+  const publicClient = usePublicClient();
+  const { abi, address: contractAddress } = useShadowBook();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -50,10 +55,57 @@ export function useDecrypt() {
     [decryptCiphertext]
   );
 
+  const decryptOrderResult = useCallback(
+    async (orderId) => {
+      if (!publicClient || !contractAddress) {
+        return null;
+      }
+
+      const [executionPriceHandle, filledAmountHandle, didFillHandle, initialized] =
+        await publicClient.readContract({
+          abi,
+          address: contractAddress,
+          functionName: 'getOrderResult',
+          args: [BigInt(orderId)],
+        });
+
+      if (!initialized) {
+        return null;
+      }
+
+      const [executionPriceRaw, filledAmountRaw, didFill] = await Promise.all([
+        decryptUint32(executionPriceHandle),
+        decryptUint32(filledAmountHandle),
+        decryptBool(didFillHandle),
+      ]);
+
+      const executionPriceNumber = Number(executionPriceRaw) / SCALING_FACTOR;
+      const filledAmountNumber = Number(filledAmountRaw) / SCALING_FACTOR;
+
+      return {
+        executionPrice: executionPriceNumber,
+        filledAmount: filledAmountNumber,
+        didFill: Boolean(didFill),
+        handles: {
+          executionPrice: executionPriceHandle,
+          filledAmount: filledAmountHandle,
+          didFill: didFillHandle,
+        },
+        raw: {
+          executionPrice: executionPriceRaw,
+          filledAmount: filledAmountRaw,
+          didFill,
+        },
+      };
+    },
+    [abi, contractAddress, decryptBool, decryptUint32, publicClient]
+  );
+
   return {
     decryptCiphertext,
     decryptUint32,
     decryptBool,
+    decryptOrderResult,
     isDecrypting,
   };
 }
